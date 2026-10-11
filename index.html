@@ -73,7 +73,7 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
     }
 
     /* Боковые ребристые захваты для пальцев на корпусе (Grip Ridges) */
@@ -224,7 +224,7 @@
 
     .btn-help-lcd {
       background: #879986;
-      border: 1.5px solid #586c56;
+      border: 1.5px solid #586c55;
       border-radius: 5px;
       width: 24px;
       height: 24px;
@@ -311,11 +311,6 @@
       color: #142013;
     }
 
-    .pet-mood {
-      font-size: 6px;
-      color: #2b3b2a;
-    }
-
     .scores-panel {
       display: flex;
       gap: 5px;
@@ -323,7 +318,7 @@
 
     .score-chip {
       background: #879986;
-      border: 1.5px solid #586c56;
+      border: 1.5px solid #586c55;
       border-radius: 5px;
       padding: 4px 6px;
       text-align: center;
@@ -484,23 +479,247 @@
       letter-spacing: 0.5px;
     }
 
-    /* ПАНЕЛЬ УПРАВЛЕНИЯ ВИНТАЖНОЙ КОНСОЛИ (Литой пластик, круглые кнопки A/B и Select/Start) */
+    /* ПАНЕЛЬ УПРАВЛЕНИЯ ВИНТАЖНОЙ КОНСОЛИ */
     .controls-zone {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: flex-start;
       width: 100%;
-      padding: 12px 4px 0;
-      margin-top: 6px;
+      padding: 4px 2px 2px;
       position: relative;
     }
 
-    /* D-PAD / Дополнительная кнопка заново в стиле функциональной клавиши */
+    /* БОЛЬШАЯ ВИНТАЖНАЯ КРЕСТОВИНА (D-PAD) СЛЕВА - МОНОЛИТНАЯ */
     .left-cluster {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+    }
+
+    .dpad-well {
+      width: 104px;
+      height: 104px;
+      background: radial-gradient(circle at 45% 45%, #bebcb5 0%, #a4a39b 60%, #83827b 100%);
+      border-radius: 50%;
+      box-shadow: 
+        inset 0 4px 8px rgba(0, 0, 0, 0.7),
+        inset 0 -3px 4px rgba(255, 255, 255, 0.65),
+        0 2px 4px rgba(255, 255, 255, 0.45),
+        0 1px 0 rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Цельная ретро-крестовина с объемным литьем и физической подложкой */
+    .dpad-cross {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      display: block;
+      filter: drop-shadow(0 5px 0 #121318) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.5));
+    }
+
+    /* Твердая крестообразная основа-шасси (исключает любые щели и разрывы) */
+    .dpad-cross::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 28px;
+      width: 30px;
+      height: 86px;
+      background: #25262c;
+      border-radius: 5px;
+      z-index: 1;
+    }
+
+    .dpad-cross::after {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 0;
+      width: 86px;
+      height: 30px;
+      background: #25262c;
+      border-radius: 5px;
+      z-index: 1;
+    }
+
+    /* Сегменты-клавиши с эффектом объемного пластика (в стиле кнопок АЛЬБОМ и ЗАНОВО) */
+    .dpad-btn {
+      position: absolute;
+      background: radial-gradient(circle at 50% 30%, #4a4d57 0%, #30333b 55%, #1f2026 100%);
+      border: 1px solid #3d404a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9499a8;
+      font-size: 9px;
+      line-height: 1;
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9), 0 1px 1px rgba(255, 255, 255, 0.2);
+      outline: none;
+      touch-action: manipulation;
+      z-index: 2;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.06s ease, color 0.06s ease;
+    }
+
+    .dpad-btn:hover {
+      background: radial-gradient(circle at 50% 30%, #545863 0%, #373a44 55%, #23252b 100%);
+      color: #cbd5e1;
+    }
+
+    /* Индивидуальная форма, объем и тактильный ход каждого сегмента */
+    .dpad-up {
+      top: 0;
+      left: 28px;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px 6px 0 0;
+      border-bottom: none;
+      border-top: 1.5px solid #6c707d;
+      box-shadow: 
+        inset 0 2px 2px rgba(255, 255, 255, 0.45),
+        inset 2px 0 2px rgba(255, 255, 255, 0.2),
+        inset -2px 0 2px rgba(0, 0, 0, 0.5);
+      padding-bottom: 4px;
+    }
+
+    .dpad-up:active,
+    .dpad-up.pressed {
+      transform: translateY(3px);
+      background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
+      color: #e2e8f0;
+      box-shadow: 
+        inset 0 1px 2px rgba(0, 0, 0, 0.8),
+        inset 0 -1px 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .dpad-down {
+      bottom: 0;
+      left: 28px;
+      width: 30px;
+      height: 30px;
+      border-radius: 0 0 6px 6px;
+      border-top: none;
+      border-bottom: 2px solid #141518;
+      box-shadow: 
+        inset 0 -3px 3px rgba(0, 0, 0, 0.7),
+        inset 2px 0 2px rgba(255, 255, 255, 0.15),
+        inset -2px 0 2px rgba(0, 0, 0, 0.5);
+      padding-top: 4px;
+    }
+
+    .dpad-down:active,
+    .dpad-down.pressed {
+      transform: translateY(3px);
+      background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
+      color: #e2e8f0;
+      box-shadow: 
+        inset 0 3px 5px rgba(0, 0, 0, 0.95);
+    }
+
+    .dpad-left {
+      top: 28px;
+      left: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px 0 0 6px;
+      border-right: none;
+      border-top: 1.5px solid #6c707d;
+      border-bottom: 2px solid #141518;
+      box-shadow: 
+        inset 0 2px 2px rgba(255, 255, 255, 0.4),
+        inset 2px 0 2px rgba(255, 255, 255, 0.35),
+        inset 0 -2px 2px rgba(0, 0, 0, 0.6);
+      padding-right: 4px;
+    }
+
+    .dpad-left:active,
+    .dpad-left.pressed {
+      transform: translateX(2px) translateY(2px);
+      background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
+      color: #e2e8f0;
+      box-shadow: 
+        inset 2px 2px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    .dpad-right {
+      top: 28px;
+      right: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 0 6px 6px 0;
+      border-left: none;
+      border-top: 1.5px solid #6c707d;
+      border-bottom: 2px solid #141518;
+      box-shadow: 
+        inset 0 2px 2px rgba(255, 255, 255, 0.4),
+        inset -2px 0 2px rgba(0, 0, 0, 0.6),
+        inset 0 -2px 2px rgba(0, 0, 0, 0.6);
+      padding-left: 4px;
+    }
+
+    .dpad-right:active,
+    .dpad-right.pressed {
+      transform: translateX(-2px) translateY(2px);
+      background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
+      color: #e2e8f0;
+      box-shadow: 
+        inset -2px 2px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Монолитный центральный хаб (сферическая вогнутая ямка под большой палец) */
+    .dpad-center {
+      position: absolute;
+      top: 27px;
+      left: 27px;
+      width: 32px;
+      height: 32px;
+      background: radial-gradient(circle at 45% 40%, #363942 0%, #25272e 65%, #1b1c22 100%);
+      box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.25),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.6);
+      z-index: 3;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dpad-center::after {
+      content: '';
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #18191f 0%, #0f1013 75%, #1e2027 100%);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.95),
+        0 1px 1px rgba(255, 255, 255, 0.15);
+      border: 1px solid #16171c;
+    }
+
+    /* ЦЕНТРАЛЬНЫЙ БЛОК: Кнопка ЗАНОВО поднята на одну высоту с верхом крестовины и LED */
+    .center-cluster {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 22px;
+      padding: 0 4px;
+      flex: 1;
+      max-width: 140px;
+    }
+
+    /* Сокет и кнопка ЗАНОВО подняты на уровень с крестовиной и индикатором */
+    .center-top-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: -2px; /* Выравнивание по высоте с LED и верхом D-Pad */
     }
 
     .btn-meta-socket {
@@ -509,6 +728,7 @@
       border-radius: 12px;
       padding: 3px;
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(255, 255, 255, 0.6);
+      display: inline-flex;
     }
 
     .btn-pill {
@@ -516,19 +736,21 @@
       color: #cfd2d6;
       border: 1px solid #6b6b6e;
       border-radius: 8px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       font-family: inherit;
       font-size: 7px;
       letter-spacing: 0.5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 5px;
       box-shadow: 
         0 4px 0 #202022,
         0 6px 8px rgba(0, 0, 0, 0.4),
         inset 0 1px 1px rgba(255, 255, 255, 0.4);
       transition: transform 0.06s, box-shadow 0.06s;
+      white-space: nowrap;
     }
 
     .btn-pill:hover {
@@ -540,14 +762,13 @@
       box-shadow: 0 1px 0 #202022, 0 2px 3px rgba(0, 0, 0, 0.4);
     }
 
-    /* Центр: Кнопка настроек в стиле Select/Start */
-    .center-cluster {
+    /* Блок резиновых кнопок HELP и OPTION (Select / Start) */
+    .select-start-row {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
       justify-content: center;
-      gap: 14px;
-      margin-bottom: 2px;
+      gap: 12px;
     }
 
     .pill-btn-group {
@@ -560,8 +781,8 @@
     .rubber-pill-btn {
       background: #737378;
       border: 1px solid #55555a;
-      width: 44px;
-      height: 14px;
+      width: 40px;
+      height: 13px;
       border-radius: 8px;
       transform: rotate(-25deg);
       box-shadow: 
@@ -581,12 +802,12 @@
     }
 
     .rubber-pill-label {
-      font-size: 6px;
+      font-size: 5.5px;
       color: #273766;
       font-weight: bold;
-      letter-spacing: 0.6px;
-      margin-top: 6px;
-      margin-left: 8px;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+      margin-left: 6px;
       display: inline-block;
       transform: rotate(-25deg);
       transform-origin: center center;
@@ -597,24 +818,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 10px;
       position: relative;
     }
 
-    /* Аппаратный LED-индикатор ровно между кнопкой альбом и серым экраном */
+    /* Аппаратный LED-индикатор ровно на уровне верха крестовины и кнопки ЗАНОВО */
     .console-led-box {
-      position: absolute;
-      bottom: calc(100% + 9px);
-      left: 50%;
-      transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       background: #b5b4ad;
-      padding: 2.5px 6px;
+      padding: 3px 6px;
       border-radius: 5px;
       border: 1px solid #9c9b94;
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
       white-space: nowrap;
+      margin-top: -2px;
     }
     .console-led-label {
       font-size: 6px;
@@ -655,8 +874,8 @@
 
     /* Классическая выпуклая кнопка вишнёвого цвета (Nintendo B/A Style) */
     .btn-round-retro {
-      width: 58px;
-      height: 58px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, #af2a4c 0%, #851c36 60%, #5d0f22 100%);
       border: 1px solid #9e2341;
@@ -738,17 +957,68 @@
       border-radius: 16px;
       width: 100%;
       max-width: 440px;
-      padding: 18px 14px;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       box-shadow: 0 16px 0 #12141c, 0 22px 30px rgba(0, 0, 0, 0.8);
       text-align: center;
       max-height: 90vh;
+      max-height: 90dvh;
       overflow-y: auto;
       overscroll-behavior: contain;
       color: #1a1e28;
       position: relative;
+    }
+
+    /* Адаптивная литая шапка модального окна (не уходит за границы и закреплена сверху) */
+    .modal-header-bar {
+      position: sticky;
+      top: -16px;
+      z-index: 35;
+      background: #cfceca;
+      background-image: linear-gradient(180deg, #dbdad5 0%, #c9c8c3 100%);
+      border: 2px solid #8e8d87;
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+      margin: -4px 0 2px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .modal-header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .modal-header-titles h2 {
+      font-size: clamp(7.5px, 2.3vw, 10px);
+      color: #273766;
+      line-height: 1.35;
+      margin: 0;
+      padding: 0;
+      letter-spacing: 0.3px;
+      word-break: break-word;
+      white-space: normal;
+    }
+
+    .modal-header-titles p {
+      font-size: clamp(5.5px, 1.8vw, 6.5px);
+      color: #505259;
+      line-height: 1.3;
+      margin: 0;
+      letter-spacing: 0.2px;
+      white-space: normal;
+      word-break: break-word;
     }
 
     /* Кнопка закрытия (крестик) в верхнем правом углу модального окна */
@@ -772,6 +1042,15 @@
       box-shadow: 0 3px 0 #381111;
       transition: transform 0.08s, background-color 0.1s;
       z-index: 20;
+      flex-shrink: 0;
+    }
+
+    .modal-header-bar .btn-modal-close {
+      position: static;
+      width: 28px;
+      height: 28px;
+      font-size: 10px;
+      box-shadow: 0 2px 0 #381111;
     }
 
     .btn-modal-close:active {
@@ -787,16 +1066,27 @@
       padding-right: 28px;
     }
 
-    .modal-card h2 {
-      font-size: 11px;
-      color: #273766;
-      line-height: 1.4;
+    .modal-card p {
+      font-size: 7.5px;
+      color: #44474e;
+      line-height: 1.6;
     }
 
-    .modal-card p {
-      font-size: 7px;
-      color: #55555a;
-      line-height: 1.6;
+    /* Модальное окно подтверждения перезапуска */
+    .confirm-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .btn-confirm-yes {
+      background: linear-gradient(180deg, #9b2839 0%, #701926 100%);
+      border: 1px solid #5c141f;
+      color: #ffe4e6;
+    }
+    .btn-confirm-yes:hover {
+      background: linear-gradient(180deg, #b02e42 0%, #801d2c 100%);
     }
 
     /* Альбом на 5 колонок */
@@ -1073,31 +1363,6 @@
       color: #fff;
     }
 
-    .grimoire-card {
-      background: #b5b4ad;
-      border: 2px solid #8e8d87;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 8px;
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .grimoire-title {
-      font-size: 8px;
-      color: #273766;
-      font-weight: bold;
-    }
-
-    .grimoire-text {
-      font-size: 7px;
-      color: #2b3b2a;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
     /* Настройки */
     .settings-list {
       display: flex;
@@ -1268,29 +1533,44 @@
 
       <!-- Панель физических винтажных кнопок -->
       <div class="controls-zone">
-        <!-- Слева: Клавиша ЗАНОВО (Reset/Restart) -->
+        <!-- СЛЕВА: Монолитная цельная ретро-крестовина (D-PAD) -->
         <div class="left-cluster">
-          <div class="btn-meta-socket">
-            <button class="btn-pill" id="btn-restart" title="Начать заново">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-              ЗАНОВО
-            </button>
+          <div class="dpad-well">
+            <div class="dpad-cross" id="dpad-controller">
+              <button class="dpad-btn dpad-up" id="dpad-btn-up" data-dir="0" title="Вверх">▲</button>
+              <button class="dpad-btn dpad-right" id="dpad-btn-right" data-dir="1" title="Вправо">▶</button>
+              <button class="dpad-btn dpad-down" id="dpad-btn-down" data-dir="2" title="Вниз">▼</button>
+              <button class="dpad-btn dpad-left" id="dpad-btn-left" data-dir="3" title="Влево">◀</button>
+              <div class="dpad-center"></div>
+            </div>
           </div>
         </div>
 
-        <!-- По центру: Кнопки HELP и OPTION (в аутентичном стиле SELECT / START) -->
+        <!-- ПО ЦЕНТРУ: Кнопка ЗАНОВО поднята выше, на один уровень с верхом крестовины и индикатором NEW -->
         <div class="center-cluster">
-          <div class="pill-btn-group">
-            <button class="rubber-pill-btn" id="btn-dragon-help" title="Помощь дракончика"></button>
-            <div class="rubber-pill-label">HELP</div>
+          <div class="center-top-row">
+            <div class="btn-meta-socket">
+              <button class="btn-pill" id="btn-restart" title="Начать заново">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                ЗАНОВО
+              </button>
+            </div>
           </div>
-          <div class="pill-btn-group">
-            <button class="rubber-pill-btn" id="btn-settings" title="Настройки"></button>
-            <div class="rubber-pill-label">OPTION</div>
+
+          <!-- Под ней резиновые клавиши HELP и OPTION -->
+          <div class="select-start-row">
+            <div class="pill-btn-group">
+              <button class="rubber-pill-btn" id="btn-dragon-help" title="Помощь дракончика"></button>
+              <div class="rubber-pill-label">HELP</div>
+            </div>
+            <div class="pill-btn-group">
+              <button class="rubber-pill-btn" id="btn-settings" title="Настройки"></button>
+              <div class="rubber-pill-label">OPTION</div>
+            </div>
           </div>
         </div>
 
-        <!-- Справа: Выпуклая круглая кнопка ДОСТИЖЕНИЯ с LED индикатором -->
+        <!-- СПРАВА: Индикатор NEW и кнопка АЛЬБОМ -->
         <div class="right-cluster">
           <div class="console-led-box" title="Новое открытие!">
             <span class="console-led-label">NEW</span>
@@ -1320,12 +1600,35 @@
     </div>
   </div>
 
+  <!-- Модальное окно подтверждения перезапуска (Защита от случайного нажатия) -->
+  <div class="modal-overlay" id="modal-confirm-restart">
+    <div class="modal-card" style="max-width: 360px;">
+      <button class="btn-modal-close" id="btn-x-confirm-cancel" title="Закрыть">✕</button>
+      <h2>НАЧАТЬ ЗАНОВО?</h2>
+      <p>Текущий дракончик, набранные очки и раскладка на поле будут сброшены!</p>
+      
+      <div class="confirm-actions">
+        <div class="btn-meta-socket">
+          <button class="btn-pill btn-confirm-yes" id="btn-confirm-restart-yes">ДА, ЗАНОВО</button>
+        </div>
+        <div class="btn-meta-socket">
+          <button class="btn-pill" id="btn-confirm-restart-no">ОТМЕНА</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Модальное окно достижений на 5 колонок -->
   <div class="modal-overlay" id="modal-achievements">
     <div class="modal-card">
-      <button class="btn-modal-close" id="btn-x-close-achievements" title="Закрыть">✕</button>
-      <h2>АЛЬБОМ ФОРМ ДРАКОНОВ</h2>
-      <p>5 ВИДОВ • 12 СТАДИЙ • <span id="progress-counter">0 / 60</span> ОТКРЫТО</p>
+      <!-- Адаптивная шапка с заголовком, прогрессом и кнопкой закрытия -->
+      <div class="modal-header-bar">
+        <div class="modal-header-titles">
+          <h2>АЛЬБОМ ФОРМ ДРАКОНОВ</h2>
+          <p>5 ВИДОВ • 12 СТАДИЙ • <span id="progress-counter">0 / 60</span> ОТКРЫТО</p>
+        </div>
+        <button class="btn-modal-close" id="btn-x-close-achievements" title="Закрыть">✕</button>
+      </div>
       
       <div class="bestiary-5cols" id="bestiary-grid"></div>
 
@@ -1348,6 +1651,7 @@
   <!-- Модальное окно настроек звука -->
   <div class="modal-overlay" id="modal-settings">
     <div class="modal-card" style="max-width: 380px;">
+      <button class="btn-modal-close" id="btn-x-close-settings" title="Закрыть">✕</button>
       <h2>НАСТРОЙКИ ЗВУКА</h2>
       
       <div class="settings-list">
@@ -1531,6 +1835,7 @@
     const achieveLedLens = document.getElementById('achieve-led-lens');
     const btnAchievements = document.getElementById('btn-achievements');
     const modalAchievements = document.getElementById('modal-achievements');
+    const modalConfirmRestart = document.getElementById('modal-confirm-restart');
     const bestiaryGrid = document.getElementById('bestiary-grid');
     const progressCounter = document.getElementById('progress-counter');
     const modalSettings = document.getElementById('modal-settings');
@@ -1539,7 +1844,7 @@
     const modalEndDesc = document.getElementById('modal-end-desc');
     const modalEndIcon = document.getElementById('modal-end-icon');
 
-    // Элементы связи с дракончиком через Gemini API
+    // Элементы связи с дракончиком
     const dragonSpeechBubble = document.getElementById('dragon-speech-bubble');
     const dragonSpeechText = document.getElementById('dragon-speech-text');
     const topPetInteractive = document.getElementById('top-pet-interactive');
@@ -1555,9 +1860,6 @@
     const btnPopoverClose = document.getElementById('btn-popover-close');
     let activeInspectedKey = null;
 
-    /* ========================================================
-       АВТОНОМНАЯ БАЗА ЗНАНИЙ И ДИАЛОГОВ ТАМАГОЧИ (100% ОФФЛАЙН)
-       ======================================================== */
     const SPECIES_NAMES = [
       "Дракон Каэлирис",
       "Дракон Миравель",
@@ -1573,7 +1875,7 @@
     ];
 
     const OFFLINE_LORE_VAULT = {
-      0: [ // 1. Бирюзовое яйцо с розовыми прожилками (Каэлирис)
+      0: [
         "Бирюзовое яйцо, испещрённое изящными розовыми прожилками, хранит ровное внутреннее тепло.",
         "Скорлупа трескается, являя миру кроху с мягкой светлой чешуёй, искрящейся при каждом вздохе.",
         "Малыш делает первые неуверенные шаги и учится выпускать крошечные язычки алого пламени.",
@@ -1587,7 +1889,7 @@
         "Древний хранитель поднебесья, чьё жаркое пламя озаряет горизонт, а крылья затмевают солнце.",
         "Венец эволюции! Легендарная форма, чей цвет достиг абсолютного совершенства, а полёт свободен от законов времени."
       ],
-      1: [ // 2. Розовое яйцо (Миравель)
+      1: [
         "Розовое яйцо с гладкой мерцающей скорлупой мягко пульсирует в такт невидимому биению сердца.",
         "Из трещин показался сонный дракончик, чья нежная чешуя сразу ловит первые солнечные блики.",
         "Дракончик забавно чихает озорными искрами и с любопытством изучает окружающий мир.",
@@ -1601,7 +1903,7 @@
         "Первородный титан небес с внушительным размахом крыльев и зрелым, неповторимым окрасом.",
         "Венец эволюции! Непревзойдённый легендарный дракон, познавший тайны высшего полёта и огненной стихии."
       ],
-      2: [ // 3. Голубое яйцо (Зефирис)
+      2: [
         "Голубое яйцо с чистым матовым сиянием излучает приятный согревающий жар.",
         "Первый проклёв скорлупы: на свет появляется любознательный малыш, жадно вдыхающий воздух.",
         "Несмело расправляет гибкие крылышки и пускает первые струйки игривого золотистого огня.",
@@ -1615,7 +1917,7 @@
         "Первородный хозяин воздушных течений с переливающимся царственным покровом чешуи.",
         "Венец эволюции! Легендарный богоподобный дракон, чьё всепоглощающее пламя и полёт стали мифом."
       ],
-      3: [ // 4. Зеленое яйцо (Вердон)
+      3: [
         "Зеленое яйцо с плотной рельефной скорлупой, хранящей в глубине дремлющую искру жизни.",
         "Скорлупа осыпается, выпуская крошечного дракона с гладкими и блестящими чешуйками.",
         "Малыш греется в лучах света, пробует тренировать лёгкие и задорно фыркает огнём.",
@@ -1629,7 +1931,7 @@
         "Первородный гигант, чья чешуя вобрала в себя многообразие полутонов за долгие века полётов.",
         "Венец эволюции! Недосягаемый легендарный дракон, властвующий над всеми небесными далями."
       ],
-      4: [ // 5. Золотое яйцо (Аурелион)
+      4: [
         "Золотое яйцо переливается тёплым благородным блеском и скрывает внутри великую силу.",
         "Треснувшая золотистая скорлупа выпускает на волю бойкого новорождённого дракончика.",
         "Дракончик делает первые шажки, расправляет мягкие крылья и выдыхает пучки ярких искр.",
@@ -1710,7 +2012,6 @@
           reply = "«*Громоподобное сияние триумфа*! Я достиг венца эволюции! Мы покорили эту головоломку!»";
         }
       } else if (promptType === 'tactics') {
-        // Умный ситуативный анализ поля
         if (!cornerLocked && maxLvl >= 3) {
           const cornerWarning = [
             "«Осторожно! Твой сильнейший дракон оторван от угла! Срочно прижми его к краю или углу, иначе новое яйцо запрёт его в центре!»",
@@ -1775,7 +2076,6 @@
     function toggleInspectGrimoire(speciesIdx, level, slotEl) {
       const key = `${speciesIdx}-${level}`;
 
-      // Повторное нажатие на ту же ячейку скрывает описание
       if (activeInspectedKey === key) {
         hideLorePopover();
         return;
@@ -1798,23 +2098,19 @@
       slotPopoverTitle.textContent = `${speciesName} • ${titleName} (${safeLevel}/12)`;
       slotPopoverBody.textContent = loreText;
 
-      // Точный расчёт координат относительно модального окна карточки
       const modalCard = modalAchievements.querySelector('.modal-card');
       const modalRect = modalCard.getBoundingClientRect();
       const slotRect = slotEl.getBoundingClientRect();
 
-      // Гарантированно позиционируем ПОД нижней границей нажатой ячейки (+8px отступ)
       const topPos = (slotRect.bottom - modalRect.top) + modalCard.scrollTop + 8;
       slotLorePopover.style.top = `${topPos}px`;
       slotLorePopover.style.display = 'flex';
 
-      // Вычисляем положение стрелочки строго по центру нажатой ячейки
       const popoverRect = slotLorePopover.getBoundingClientRect();
       const arrowX = (slotRect.left + slotRect.width / 2) - popoverRect.left;
       const clampedArrowX = Math.max(16, Math.min(popoverRect.width - 16, arrowX));
       slotPopoverArrow.style.left = `${clampedArrowX}px`;
 
-      // Плавная докрутка, если ячейка находится внизу экрана
       setTimeout(() => {
         slotLorePopover.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 50);
@@ -2280,6 +2576,7 @@
       modalGameOver.classList.remove('active');
       modalAchievements.classList.remove('active');
       modalSettings.classList.remove('active');
+      modalConfirmRestart.classList.remove('active');
       tileContainer.innerHTML = '';
       activeTileElements.clear();
       initEmptyGrid();
@@ -2294,10 +2591,12 @@
       renderBoard();
     }
 
+    /* Управление с клавиатуры */
     window.addEventListener('keydown', (e) => {
       if (modalAchievements.classList.contains('active') || 
           modalGameOver.classList.contains('active') || 
-          modalSettings.classList.contains('active')) return;
+          modalSettings.classList.contains('active') ||
+          modalConfirmRestart.classList.contains('active')) return;
 
       switch (e.key) {
         case 'ArrowUp':
@@ -2335,6 +2634,7 @@
       }
     });
 
+    /* Управление жестами / свайпами на игровом поле */
     let touchStartX = 0;
     let touchStartY = 0;
     let touchStartTime = 0;
@@ -2369,11 +2669,54 @@
       }
     }, { passive: true });
 
-    document.getElementById('btn-restart').addEventListener('click', () => {
+    /* Управление большой физической крестовиной (D-PAD) */
+    const dpadButtons = document.querySelectorAll('.dpad-btn');
+    dpadButtons.forEach(btn => {
+      const handlePress = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const dir = parseInt(btn.getAttribute('data-dir'), 10);
+        btn.classList.add('pressed');
+        playSynthTone(240, 0.03, 'triangle', 0.05);
+        move(dir);
+      };
+
+      const handleRelease = () => {
+        btn.classList.remove('pressed');
+      };
+
+      btn.addEventListener('pointerdown', handlePress);
+      btn.addEventListener('pointerup', handleRelease);
+      btn.addEventListener('pointerleave', handleRelease);
+      btn.addEventListener('pointercancel', handleRelease);
+    });
+
+    /* ЗАЩИТА ОТ СЛУЧАЙНОГО НАЖАТИЯ: Кнопка ЗАНОВО открывает диалог подтверждения */
+    const btnRestart = document.getElementById('btn-restart');
+    const btnConfirmRestartYes = document.getElementById('btn-confirm-restart-yes');
+    const btnConfirmRestartNo = document.getElementById('btn-confirm-restart-no');
+    const btnXConfirmCancel = document.getElementById('btn-x-confirm-cancel');
+
+    btnRestart.addEventListener('click', () => {
       playSynthTone(400, 0.05);
+      modalConfirmRestart.classList.add('active');
+    });
+
+    btnConfirmRestartYes.addEventListener('click', () => {
+      playSynthTone(480, 0.07);
+      modalConfirmRestart.classList.remove('active');
       startNewGame();
     });
 
+    function closeRestartConfirm() {
+      playSynthTone(320, 0.04);
+      modalConfirmRestart.classList.remove('active');
+    }
+
+    btnConfirmRestartNo.addEventListener('click', closeRestartConfirm);
+    btnXConfirmCancel.addEventListener('click', closeRestartConfirm);
+
+    /* Обработчики модального окна достижений */
     document.getElementById('btn-achievements').addEventListener('click', () => {
       playSynthTone(520, 0.05);
       renderBestiary();
@@ -2403,10 +2746,24 @@
       });
     }
 
+    /* Обработчики модального окна настроек */
     document.getElementById('btn-settings').addEventListener('click', () => {
       playSynthTone(480, 0.05);
       modalSettings.classList.add('active');
     });
+
+    document.getElementById('btn-close-settings').addEventListener('click', () => {
+      playSynthTone(320, 0.04);
+      modalSettings.classList.remove('active');
+    });
+
+    const btnXCloseSettings = document.getElementById('btn-x-close-settings');
+    if (btnXCloseSettings) {
+      btnXCloseSettings.addEventListener('click', () => {
+        playSynthTone(320, 0.04);
+        modalSettings.classList.remove('active');
+      });
+    }
 
     const btnDragonHelp = document.getElementById('btn-dragon-help');
     if (btnDragonHelp) {
@@ -2415,11 +2772,6 @@
         speakWithDragon('mood');
       });
     }
-
-    document.getElementById('btn-close-settings').addEventListener('click', () => {
-      playSynthTone(320, 0.04);
-      modalSettings.classList.remove('active');
-    });
 
     // Обработчики автономных диалогов Тамагочи с дракончиком
     topPetInteractive.addEventListener('click', () => {
