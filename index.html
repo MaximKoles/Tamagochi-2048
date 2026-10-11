@@ -523,7 +523,7 @@
       filter: drop-shadow(0 5px 0 #121318) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.5));
     }
 
-    /* Твердая крестообразная основа-шасси (исключает любые щели и разрывы) */
+    /* Твердая крестообразная основа-шасси */
     .dpad-cross::before {
       content: '';
       position: absolute;
@@ -548,7 +548,7 @@
       z-index: 1;
     }
 
-    /* Сегменты-клавиши с эффектом объемного пластика (в стиле кнопок АЛЬБОМ и ЗАНОВО) */
+    /* Сегменты-клавиши */
     .dpad-btn {
       position: absolute;
       background: radial-gradient(circle at 50% 30%, #4a4d57 0%, #30333b 55%, #1f2026 100%);
@@ -572,7 +572,6 @@
       color: #cbd5e1;
     }
 
-    /* Индивидуальная форма, объем и тактильный ход каждого сегмента */
     .dpad-up {
       top: 0;
       left: 28px;
@@ -618,8 +617,7 @@
       transform: translateY(3px);
       background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
       color: #e2e8f0;
-      box-shadow: 
-        inset 0 3px 5px rgba(0, 0, 0, 0.95);
+      box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.95);
     }
 
     .dpad-left {
@@ -643,8 +641,7 @@
       transform: translateX(2px) translateY(2px);
       background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
       color: #e2e8f0;
-      box-shadow: 
-        inset 2px 2px 4px rgba(0, 0, 0, 0.9);
+      box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.9);
     }
 
     .dpad-right {
@@ -668,11 +665,9 @@
       transform: translateX(-2px) translateY(2px);
       background: radial-gradient(circle at 50% 30%, #292a30 0%, #1c1d22 60%, #141518 100%);
       color: #e2e8f0;
-      box-shadow: 
-        inset -2px 2px 4px rgba(0, 0, 0, 0.9);
+      box-shadow: inset -2px 2px 4px rgba(0, 0, 0, 0.9);
     }
 
-    /* Монолитный центральный хаб (сферическая вогнутая ямка под большой палец) */
     .dpad-center {
       position: absolute;
       top: 27px;
@@ -702,7 +697,7 @@
       border: 1px solid #16171c;
     }
 
-    /* ЦЕНТРАЛЬНЫЙ БЛОК: Кнопка ЗАНОВО поднята на одну высоту с верхом крестовины и LED */
+    /* ЦЕНТРАЛЬНЫЙ БЛОК */
     .center-cluster {
       display: flex;
       flex-direction: column;
@@ -714,13 +709,12 @@
       max-width: 140px;
     }
 
-    /* Сокет и кнопка ЗАНОВО подняты на уровень с крестовиной и индикатором */
     .center-top-row {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
-      margin-top: -2px; /* Выравнивание по высоте с LED и верхом D-Pad */
+      margin-top: -2px;
     }
 
     .btn-meta-socket {
@@ -763,7 +757,6 @@
       box-shadow: 0 1px 0 #202022, 0 2px 3px rgba(0, 0, 0, 0.4);
     }
 
-    /* Блок резиновых кнопок HELP и OPTION (Select / Start) */
     .select-start-row {
       display: flex;
       flex-direction: row;
@@ -814,7 +807,7 @@
       transform-origin: center center;
     }
 
-    /* Правый блок: Классические круглые выпуклые ретро-кнопки под углом */
+    /* Правый блок */
     .right-cluster {
       display: flex;
       flex-direction: column;
@@ -823,7 +816,6 @@
       position: relative;
     }
 
-    /* Аппаратный LED-индикатор ровно на уровне верха крестовины и кнопки ЗАНОВО */
     .console-led-box {
       display: flex;
       align-items: center;
@@ -873,7 +865,6 @@
       justify-content: center;
     }
 
-    /* Классическая выпуклая кнопка вишнёвого цвета (Nintendo B/A Style) */
     .btn-round-retro {
       width: 56px;
       height: 56px;
@@ -911,7 +902,6 @@
         inset 0 1px 2px rgba(0, 0, 0, 0.6);
     }
 
-    /* Аутентичные диагональные прорези динамика внизу справа */
     .console-speaker-grille {
       position: absolute;
       bottom: 6px;
@@ -972,7 +962,6 @@
       position: relative;
     }
 
-    /* Адаптивная литая шапка модального окна (не уходит за границы и закреплена сверху) */
     .modal-header-bar {
       position: sticky;
       top: -16px;
@@ -1022,7 +1011,6 @@
       word-break: break-word;
     }
 
-    /* Кнопка закрытия (крестик) в верхнем правом углу модального окна */
     .btn-modal-close {
       position: absolute;
       top: 12px;
@@ -1060,20 +1048,6 @@
       background: #a13d3d;
     }
 
-    .modal-card h2 {
-      font-size: 11px;
-      color: #273766;
-      line-height: 1.4;
-      padding-right: 28px;
-    }
-
-    .modal-card p {
-      font-size: 7.5px;
-      color: #44474e;
-      line-height: 1.6;
-    }
-
-    /* Модальное окно подтверждения перезапуска */
     .confirm-actions {
       display: flex;
       gap: 10px;
@@ -1090,7 +1064,7 @@
       background: linear-gradient(180deg, #b02e42 0%, #801d2c 100%);
     }
 
-    /* Альбом на 5 колонок */
+    /* Альбом */
     .bestiary-5cols {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -1156,7 +1130,6 @@
       background: transparent;
     }
 
-    /* Всплывающее контекстное описание прямо под ячейкой */
     .slot-lore-popover {
       position: absolute;
       left: 14px;
@@ -1248,7 +1221,7 @@
       line-height: 1.55;
     }
 
-    /* Ретро-диалог общения с драконом (Tamagotchi Communicator) */
+    /* Тамагочи спичбабл */
     .tamagotchi-speech-bubble {
       display: none;
       position: absolute;
@@ -1411,7 +1384,6 @@
       color: #bbf7d0;
     }
 
-    /* Подпись автора под консолью */
     .author-credit {
       margin-top: 16px;
       font-size: 7px;
@@ -1434,7 +1406,6 @@
       text-decoration: underline;
     }
 
-    /* Canvas салюта */
     #fx-canvas {
       position: fixed;
       top: 0;
@@ -1451,7 +1422,6 @@
   <div class="game-wrapper">
     <!-- Винтажная консоль Game Boy / Tamagotchi Edition -->
     <div class="vintage-console">
-      <!-- Верхний слот картриджа с переключателем питания -->
       <div class="console-top-slot">
         <div class="console-switch-tab"></div>
         <span style="font-size: 5px; color: #a9a8a2; letter-spacing: 0.5px;">◀ OFF • ON ▶</span>
@@ -1484,7 +1454,6 @@
               </div>
             </div>
 
-            <!-- Кнопка вопроса -->
             <button class="btn-help-lcd" id="btn-help-bubble" title="Спросить дракончика">?</button>
 
             <div class="scores-panel">
@@ -1499,7 +1468,7 @@
             </div>
           </div>
 
-          <!-- Всплывающий интерактивный диалог Тамагочи с драконом (Автономный оффлайн-режим) -->
+          <!-- Всплывающий интерактивный диалог Тамагочи с драконом -->
           <div class="tamagotchi-speech-bubble" id="dragon-speech-bubble">
             <div class="dragon-speech-header">
               <div id="dragon-speech-text">«Гррр! Я расту с каждым твоим ходом...»</div>
@@ -1534,7 +1503,7 @@
 
       <!-- Панель физических винтажных кнопок -->
       <div class="controls-zone">
-        <!-- СЛЕВА: Монолитная цельная ретро-крестовина (D-PAD) -->
+        <!-- СЛЕВА: Монолитная крестовина (D-PAD) -->
         <div class="left-cluster">
           <div class="dpad-well">
             <div class="dpad-cross" id="dpad-controller">
@@ -1547,7 +1516,7 @@
           </div>
         </div>
 
-        <!-- ПО ЦЕНТРУ: Кнопка ЗАНОВО поднята выше, на один уровень с верхом крестовины и индикатором NEW -->
+        <!-- ПО ЦЕНТРУ: Кнопка ЗАНОВО -->
         <div class="center-cluster">
           <div class="center-top-row">
             <div class="btn-meta-socket">
@@ -1558,7 +1527,6 @@
             </div>
           </div>
 
-          <!-- Под ней резиновые клавиши HELP и OPTION -->
           <div class="select-start-row">
             <div class="pill-btn-group">
               <button class="rubber-pill-btn" id="btn-dragon-help" title="Помощь дракончика"></button>
@@ -1586,7 +1554,6 @@
         </div>
       </div>
 
-      <!-- Прорези динамика консоли -->
       <div class="console-speaker-grille">
         <div class="grille-slot"></div>
         <div class="grille-slot"></div>
@@ -1595,13 +1562,12 @@
       </div>
     </div>
 
-    <!-- Подпись создателя -->
     <div class="author-credit">
       Сделал <a href="https://t.me/maxim_koles" target="_blank" rel="noopener noreferrer">@maxim_koles</a> с помощью ИИ
     </div>
   </div>
 
-  <!-- Модальное окно подтверждения перезапуска (Защита от случайного нажатия) -->
+  <!-- Модальное окно подтверждения перезапуска -->
   <div class="modal-overlay" id="modal-confirm-restart">
     <div class="modal-card" style="max-width: 360px;">
       <button class="btn-modal-close" id="btn-x-confirm-cancel" title="Закрыть">✕</button>
@@ -1622,7 +1588,6 @@
   <!-- Модальное окно достижений на 5 колонок -->
   <div class="modal-overlay" id="modal-achievements">
     <div class="modal-card">
-      <!-- Адаптивная шапка с заголовком, прогрессом и кнопкой закрытия -->
       <div class="modal-header-bar">
         <div class="modal-header-titles">
           <h2>АЛЬБОМ ФОРМ ДРАКОНОВ</h2>
@@ -1633,7 +1598,6 @@
       
       <div class="bestiary-5cols" id="bestiary-grid"></div>
 
-      <!-- Всплывающая плашка описания дракона прямо под нажатой ячейкой -->
       <div class="slot-lore-popover" id="slot-lore-popover">
         <div class="slot-popover-arrow" id="slot-popover-arrow"></div>
         <div class="slot-popover-header">
@@ -1684,7 +1648,6 @@
     </div>
   </div>
 
-  <!-- Canvas для фейерверка из кнопки достижений -->
   <canvas id="fx-canvas"></canvas>
 
   <script>
@@ -1696,6 +1659,11 @@
         tg.disableVerticalSwipes();
       }
     }
+
+    /* Ключи локального хранилища браузера */
+    const STORAGE_BEST_KEY = 'dragon_2048_best_score';
+    const STORAGE_ALBUM_KEY = 'dragon_2048_unlocked_matrix';
+    const STORAGE_SETTINGS_KEY = 'dragon_2048_settings';
 
     let audioCtx = null;
     let moveSoundEnabled = true;
@@ -1845,7 +1813,6 @@
     const modalEndDesc = document.getElementById('modal-end-desc');
     const modalEndIcon = document.getElementById('modal-end-icon');
 
-    // Элементы связи с дракончиком
     const dragonSpeechBubble = document.getElementById('dragon-speech-bubble');
     const dragonSpeechText = document.getElementById('dragon-speech-text');
     const topPetInteractive = document.getElementById('top-pet-interactive');
@@ -1860,6 +1827,66 @@
     const slotPopoverBody = document.getElementById('slot-popover-body');
     const btnPopoverClose = document.getElementById('btn-popover-close');
     let activeInspectedKey = null;
+
+    /* ФУНКЦИИ СОХРАНЕНИЯ В LOCALSTORAGE */
+    function loadSavedGameData() {
+      try {
+        const savedBest = localStorage.getItem(STORAGE_BEST_KEY);
+        if (savedBest !== null) {
+          bestScore = parseInt(savedBest, 10) || 0;
+          if (bestTxt) bestTxt.textContent = bestScore;
+        }
+
+        const savedAlbum = localStorage.getItem(STORAGE_ALBUM_KEY);
+        if (savedAlbum) {
+          const parsed = JSON.parse(savedAlbum);
+          if (Array.isArray(parsed) && parsed.length === 5) {
+            unlockedMatrix = parsed;
+          }
+        }
+
+        const savedSettings = localStorage.getItem(STORAGE_SETTINGS_KEY);
+        if (savedSettings) {
+          const conf = JSON.parse(savedSettings);
+          if (typeof conf.moveSound === 'boolean') moveSoundEnabled = conf.moveSound;
+          if (typeof conf.fanfareSound === 'boolean') fanfareSoundEnabled = conf.fanfareSound;
+
+          const toggleMoveBtn = document.getElementById('toggle-move-sound');
+          const toggleFanfareBtn = document.getElementById('toggle-fanfare-sound');
+          if (toggleMoveBtn) {
+            toggleMoveBtn.textContent = moveSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
+            toggleMoveBtn.classList.toggle('active', moveSoundEnabled);
+          }
+          if (toggleFanfareBtn) {
+            toggleFanfareBtn.textContent = fanfareSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
+            toggleFanfareBtn.classList.toggle('active', fanfareSoundEnabled);
+          }
+        }
+      } catch (e) {
+        console.warn('localStorage недоступен:', e);
+      }
+    }
+
+    function saveBestScore() {
+      try {
+        localStorage.setItem(STORAGE_BEST_KEY, bestScore.toString());
+      } catch (e) {}
+    }
+
+    function saveAlbumData() {
+      try {
+        localStorage.setItem(STORAGE_ALBUM_KEY, JSON.stringify(unlockedMatrix));
+      } catch (e) {}
+    }
+
+    function saveSettingsData() {
+      try {
+        localStorage.setItem(STORAGE_SETTINGS_KEY, JSON.stringify({
+          moveSound: moveSoundEnabled,
+          fanfareSound: fanfareSoundEnabled
+        }));
+      } catch (e) {}
+    }
 
     const SPECIES_NAMES = [
       "Дракон Каэлирис",
@@ -2230,6 +2257,7 @@
       if (!unlockedMatrix[speciesIdx].includes(level)) {
         unlockedMatrix[speciesIdx].push(level);
         unlockedMatrix[speciesIdx].sort((a, b) => a - b);
+        saveAlbumData();
         
         if (achieveLedLens) {
           achieveLedLens.classList.add('lit');
@@ -2413,6 +2441,7 @@
       if (score > bestScore) {
         bestScore = score;
         bestTxt.textContent = bestScore;
+        saveBestScore();
       }
       updateTopAvatar();
     }
@@ -2592,7 +2621,6 @@
       renderBoard();
     }
 
-    /* Управление с клавиатуры */
     window.addEventListener('keydown', (e) => {
       if (modalAchievements.classList.contains('active') || 
           modalGameOver.classList.contains('active') || 
@@ -2635,7 +2663,6 @@
       }
     });
 
-    /* Управление жестами / свайпами на игровом поле */
     let touchStartX = 0;
     let touchStartY = 0;
     let touchStartTime = 0;
@@ -2670,7 +2697,6 @@
       }
     }, { passive: true });
 
-    /* Управление большой физической крестовиной (D-PAD) */
     const dpadButtons = document.querySelectorAll('.dpad-btn');
     dpadButtons.forEach(btn => {
       const handlePress = (e) => {
@@ -2692,7 +2718,6 @@
       btn.addEventListener('pointercancel', handleRelease);
     });
 
-    /* ЗАЩИТА ОТ СЛУЧАЙНОГО НАЖАТИЯ: Кнопка ЗАНОВО открывает диалог подтверждения */
     const btnRestart = document.getElementById('btn-restart');
     const btnConfirmRestartYes = document.getElementById('btn-confirm-restart-yes');
     const btnConfirmRestartNo = document.getElementById('btn-confirm-restart-no');
@@ -2717,7 +2742,6 @@
     btnConfirmRestartNo.addEventListener('click', closeRestartConfirm);
     btnXConfirmCancel.addEventListener('click', closeRestartConfirm);
 
-    /* Обработчики модального окна достижений */
     document.getElementById('btn-achievements').addEventListener('click', () => {
       playSynthTone(520, 0.05);
       renderBestiary();
@@ -2747,7 +2771,6 @@
       });
     }
 
-    /* Обработчики модального окна настроек */
     document.getElementById('btn-settings').addEventListener('click', () => {
       playSynthTone(480, 0.05);
       modalSettings.classList.add('active');
@@ -2774,7 +2797,6 @@
       });
     }
 
-    // Обработчики автономных диалогов Тамагочи с дракончиком
     topPetInteractive.addEventListener('click', () => {
       speakWithDragon('mood');
     });
@@ -2808,6 +2830,7 @@
       moveSoundEnabled = !moveSoundEnabled;
       toggleMoveBtn.textContent = moveSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
       toggleMoveBtn.classList.toggle('active', moveSoundEnabled);
+      saveSettingsData();
       if (moveSoundEnabled) playMoveAudio();
     });
 
@@ -2815,6 +2838,7 @@
       fanfareSoundEnabled = !fanfareSoundEnabled;
       toggleFanfareBtn.textContent = fanfareSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
       toggleFanfareBtn.classList.toggle('active', fanfareSoundEnabled);
+      saveSettingsData();
       if (fanfareSoundEnabled) playUnlockAudio();
     });
 
@@ -2827,6 +2851,7 @@
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadSavedGameData();
       DRAGON_ASSETS.forEach(url => prepareCroppedAsset(url, 10));
       startNewGame();
     });
