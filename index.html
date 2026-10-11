@@ -1515,6 +1515,27 @@
       text-decoration: underline;
     }
 
+    /* Стили для надежного сохранения картинок на iOS */
+    #ios-preview-img {
+      -webkit-touch-callout: default !important;
+      user-select: auto !important;
+      -webkit-user-select: auto !important;
+      touch-action: auto !important;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    }
+
+    .ios-instruction-banner {
+      font-size: 7.5px;
+      color: #172416;
+      line-height: 1.5;
+      background: #b5c7b3;
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1.5px dashed #4e624c;
+      text-align: left;
+    }
+
     #fx-canvas {
       position: fixed;
       top: 0;
@@ -1761,6 +1782,31 @@
 
       <div class="btn-meta-socket" style="align-self: center; margin-top: 4px;">
         <button class="btn-pill" id="btn-close-share">ЗАКРЫТЬ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно сохранения для устройств iOS (iPhone / iPad / Safari / Telegram) -->
+  <div class="modal-overlay" id="modal-ios-save">
+    <div class="modal-card" style="max-width: 390px;">
+      <div class="modal-header-bar">
+        <div class="modal-header-titles">
+          <h2>СОХРАНИТЬ В ФОТО</h2>
+          <p>ИНСТРУКЦИЯ ДЛЯ IPHONE И IPAD</p>
+        </div>
+        <button class="btn-modal-close" id="btn-x-close-ios-save" title="Закрыть">✕</button>
+      </div>
+
+      <div class="ios-instruction-banner">
+        📱 <b>Зажмите картинку пальцем на 1 секунду</b>, затем в появившемся меню iOS выберите <b>«Сохранить в Фото»</b> (или «Поделиться»).
+      </div>
+
+      <div style="border: 2px solid #50644e; border-radius: 8px; overflow: hidden; max-height: 54vh; max-height: 54dvh; background: #849683; display: flex; align-items: center; justify-content: center; padding: 6px;">
+        <img id="ios-preview-img" style="max-width: 100%; height: auto; display: block; object-fit: contain;" alt="Dragon Record Console" />
+      </div>
+
+      <div class="btn-meta-socket" style="align-self: center; margin-top: 4px;">
+        <button class="btn-pill" id="btn-close-ios-save">ГОТОВО</button>
       </div>
     </div>
   </div>
@@ -2061,6 +2107,20 @@
     const btnXCloseShare = document.getElementById('btn-x-close-share');
     const shareToast = document.getElementById('share-toast-notification');
 
+    /* Элементы iOS сохранения */
+    const modalIosSave = document.getElementById('modal-ios-save');
+    const iosPreviewImg = document.getElementById('ios-preview-img');
+    const btnCloseIosSave = document.getElementById('btn-close-ios-save');
+    const btnXCloseIosSave = document.getElementById('btn-x-close-ios-save');
+
+    function isIosDevice() {
+      const userAgent = navigator.userAgent || '';
+      const isAppleMobile = /iPad|iPhone|iPod/.test(userAgent);
+      const isAppleMacTouch = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isTgIos = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.platform === 'ios');
+      return isAppleMobile || isAppleMacTouch || isTgIos;
+    }
+
     function showToast(msg) {
       if (!shareToast) return;
       shareToast.textContent = msg;
@@ -2318,19 +2378,94 @@
         ctx.font = 'bold 13px "Press Start 2P", monospace';
         ctx.fillText('СМОЖЕШЬ ПРЕВЗОЙТИ МОЙ РЕЗУЛЬТАТ?', w / 2, boxY + boxH + 45);
 
-        // Скачивание файла на устройство
-        try {
-          const imgData = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.download = `dragon-boy-record-${peak.score}.png`;
-          link.href = imgData;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          showToast('Скриншот сохранён!');
-        } catch (err) {
-          console.warn('Canvas export error:', err);
-          showToast('Не удалось скачать файл');
+        const fileName = `dragon-boy-record-${peak.score}.png`;
+        const isIOS = isIosDevice();
+
+        const openIosModalWithImage = (imgSrc) => {
+          if (iosPreviewImg) {
+            iosPreviewImg.src = imgSrc;
+          }
+          if (modalIosSave) {
+            modalIosSave.classList.add('active');
+          }
+          showToast('Зажмите картинку для сохранения');
+        };
+
+        const downloadDesktopFallback = (imgUrl) => {
+          try {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = imgUrl;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+              document.body.removeChild(link);
+            }, 300);
+            showToast('Скриншот сохранён!');
+          } catch (e) {
+            openIosModalWithImage(imgUrl);
+          }
+        };
+
+        // Экспорт через Canvas Blob с поддержкой iOS Web Share API
+        if (canvas.toBlob) {
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              const fallbackUrl = canvas.toDataURL('image/png');
+              if (isIOS) openIosModalWithImage(fallbackUrl);
+              else downloadDesktopFallback(fallbackUrl);
+              return;
+            }
+
+            // 1. Попытка нативного шеринга через файл (работает в iOS Safari и iOS Telegram)
+            if (isIOS && navigator.canShare) {
+              try {
+                const file = new File([blob], fileName, { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                  await navigator.share({
+                    files: [file],
+                    title: 'Dragon Boy 2048'
+                  });
+                  showToast('Изображение готово!');
+                  return;
+                }
+              } catch (shareErr) {
+                if (shareErr.name === 'AbortError') {
+                  return; // Пользователь сам закрыл меню
+                }
+                console.warn('Navigator share error on iOS:', shareErr);
+              }
+            }
+
+            // 2. Если на iOS нативный диалог недоступен или выдал ошибку — открываем диалог с зажатием
+            if (isIOS) {
+              const blobUrl = URL.createObjectURL(blob);
+              openIosModalWithImage(blobUrl);
+              return;
+            }
+
+            // 3. Стандартная загрузка для Android и ПК
+            try {
+              const blobUrl = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.download = fileName;
+              link.href = blobUrl;
+              document.body.appendChild(link);
+              link.click();
+              setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+              }, 400);
+              showToast('Скриншот сохранён!');
+            } catch (err) {
+              const dataUrl = canvas.toDataURL('image/png');
+              downloadDesktopFallback(dataUrl);
+            }
+          }, 'image/png');
+        } else {
+          const fallbackData = canvas.toDataURL('image/png');
+          if (isIOS) openIosModalWithImage(fallbackData);
+          else downloadDesktopFallback(fallbackData);
         }
       };
 
@@ -3155,6 +3290,16 @@
     btnXCloseShare.addEventListener('click', closeShareBragModal);
     btnTgShareAction.addEventListener('click', triggerTelegramShare);
     btnSaveScreenshot.addEventListener('click', exportBragScreenshot);
+
+    function closeIosSaveModal() {
+      playSynthTone(320, 0.04);
+      if (modalIosSave) {
+        modalIosSave.classList.remove('active');
+      }
+    }
+
+    if (btnCloseIosSave) btnCloseIosSave.addEventListener('click', closeIosSaveModal);
+    if (btnXCloseIosSave) btnXCloseIosSave.addEventListener('click', closeIosSaveModal);
 
     const btnModalShareGameover = document.getElementById('btn-modal-share-gameover');
     if (btnModalShareGameover) {
