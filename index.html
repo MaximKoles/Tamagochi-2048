@@ -1,1 +1,2482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tamagotchi: Dragon Evolution 2048</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      overscroll-behavior: none;
+      overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
+      height: 100%;
+    }
+
+    body {
+      background-color: #1a1e28;
+      background-image: 
+        radial-gradient(circle at 50% 25%, #252b3b 0%, #10131b 80%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 2px, transparent 2px, transparent 6px);
+      color: #e2e8f0;
+      font-family: 'Press Start 2P', monospace, system-ui;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 10px 42px;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    .game-wrapper {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      position: relative;
+    }
+
+    /* РЕАЛИСТИЧНЫЙ КОРПУС ВИНТАЖНОЙ КОНСОЛИ 90-Х (Off-White / DMG Grey) */
+    .vintage-console {
+      width: 100%;
+      background: #cfceca;
+      background-image: 
+        radial-gradient(circle at 45% 15%, #e6e5e0 0%, #c9c8c3 55%, #b5b4ad 100%),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.015) 0px, rgba(0, 0, 0, 0.015) 1px, transparent 1px, transparent 3px);
+      border: 4px solid #b8b7b1;
+      border-radius: 24px 24px 60px 24px;
+      padding: 24px 18px 26px;
+      box-shadow: 
+        0 20px 0 #141720,
+        0 28px 45px rgba(0, 0, 0, 0.8),
+        inset 0 2px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -6px 8px rgba(0, 0, 0, 0.35),
+        inset -4px 0 6px rgba(0, 0, 0, 0.15),
+        inset 4px 0 6px rgba(255, 255, 255, 0.5);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Боковые ребристые захваты для пальцев на корпусе (Grip Ridges) */
+    .vintage-console::before,
+    .vintage-console::after {
+      content: '';
+      position: absolute;
+      top: 130px;
+      width: 5px;
+      height: 90px;
+      background: repeating-linear-gradient(180deg, #9f9e97 0px, #9f9e97 3px, #dfdeda 3px, #dfdeda 8px);
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+    .vintage-console::before { left: 4px; }
+    .vintage-console::after { right: 4px; }
+
+    /* Верхний паз картриджа со штамповкой OFF-ON */
+    .console-top-slot {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 190px;
+      height: 12px;
+      background: #73726d;
+      border: 2px solid #575652;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 14px;
+    }
+    .console-switch-tab {
+      width: 24px;
+      height: 5px;
+      background: #3e3d3a;
+      border-radius: 2px;
+    }
+
+    /* ФИРМЕННЫЙ ЗАЩИТНЫЙ БЕЗЕЛЬ ДИСПЛЕЯ (Тёмно-серый ретро-экран) */
+    .screen-bezel {
+      background: linear-gradient(180deg, #787a82 0%, #686971 40%, #56575e 100%);
+      border: 3px solid #434449;
+      border-top: 3px solid #8c8e96;
+      border-radius: 14px 14px 34px 14px;
+      padding: 16px 14px 14px;
+      box-shadow: 
+        inset 0 4px 8px rgba(0, 0, 0, 0.65),
+        inset 0 -3px 4px rgba(255, 255, 255, 0.15),
+        0 4px 6px rgba(0, 0, 0, 0.28),
+        0 1px 0 rgba(255, 255, 255, 0.6);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Верхняя полоска безеля с винтажными линиями и индикатором BATTERY */
+    .bezel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px 2px;
+      border-bottom: 2px solid #48494f;
+      margin-bottom: 2px;
+    }
+
+    .brand-stripes {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .stripe-blue { width: 44px; height: 2px; background: #2f4585; border-radius: 1px; }
+    .stripe-red  { width: 34px; height: 2px; background: #9b2839; border-radius: 1px; }
+
+    .battery-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .battery-led {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 7px #ef4444, inset 0 1px 1px #fff;
+    }
+    .battery-label {
+      font-size: 5px;
+      color: #b0b2ba;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+    }
+
+    /* ЕДИНЫЙ ВИНТАЖНЫЙ LCD ЭКРАН (#9dae9c) С ГЛУБОКОЙ ВИНЬЕТКОЙ И СТЕКЛОМ */
+    .lcd-screen {
+      background: #9dae9c;
+      background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.06) 50%, transparent 50%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 50%, transparent 50%);
+      background-size: 3px 3px;
+      border: 4px solid #4a5d47;
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 
+        inset 0 0 18px rgba(38, 51, 37, 0.75),
+        inset 0 4px 8px rgba(0, 0, 0, 0.45),
+        0 1px 2px rgba(255, 255, 255, 0.1);
+      color: #172416;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Реалистичный стеклянный блик на экране консоли */
+    .lcd-screen::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -20%;
+      width: 140%;
+      height: 70%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 45%, transparent 60%);
+      transform: rotate(-10deg);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .screen-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed #6f826d;
+      padding-bottom: 6px;
+    }
+
+    .companion-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .btn-help-lcd {
+      background: #879986;
+      border: 1.5px solid #586c56;
+      border-radius: 5px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: bold;
+      color: #172416;
+      cursor: pointer;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: transform 0.08s, background-color 0.1s;
+      outline: none;
+      user-select: none;
+    }
+
+    .btn-help-lcd:hover {
+      background: #92a491;
+    }
+
+    .btn-help-lcd:active {
+      transform: translateY(1px) scale(0.95);
+      background: #798b78;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .pet-avatar {
+      width: 42px;
+      height: 42px;
+      background: #849683;
+      border: 2px solid #50634e;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.28);
+      animation: petIdle 1.8s ease-in-out infinite alternate;
+      transition: transform 0.15s ease-out;
+    }
+
+    .pet-avatar.react-jump {
+      animation: petJump 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes petJump {
+      0% { transform: scale(0.9) translateY(2px); }
+      50% { transform: scale(1.22) translateY(-6px); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    @keyframes petIdle {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px) scale(1.02); }
+    }
+
+    .pet-emote {
+      position: absolute;
+      top: -8px;
+      left: 34px;
+      font-size: 11px;
+      opacity: 0;
+      transform: translateY(0);
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.3s;
+    }
+
+    .pet-emote.show {
+      opacity: 1;
+      transform: translateY(-8px);
+    }
+
+    .pet-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .pet-rank-title {
+      font-size: 7px;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+      color: #142013;
+    }
+
+    .pet-mood {
+      font-size: 6px;
+      color: #2b3b2a;
+    }
+
+    .scores-panel {
+      display: flex;
+      gap: 5px;
+    }
+
+    .score-chip {
+      background: #879986;
+      border: 1.5px solid #586c56;
+      border-radius: 5px;
+      padding: 4px 6px;
+      text-align: center;
+      min-width: 58px;
+    }
+
+    .score-chip .lbl {
+      font-size: 6px;
+      color: #20311e;
+      text-transform: uppercase;
+    }
+
+    .score-chip .val {
+      font-size: 9px;
+      color: #0d170d;
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    /* Игровое поле внутри экрана */
+    .board-outer {
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      background: #8e9f8d;
+      border: 2px solid #586c55;
+      border-radius: 8px;
+      box-shadow: inset 0 3px 8px rgba(35, 48, 34, 0.45);
+      touch-action: none;
+      overflow: hidden;
+    }
+
+    .board-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 6px;
+    }
+
+    .grid-background {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .grid-cell {
+      background: #80917f;
+      border-radius: 5px;
+      box-shadow: none;
+      border: none;
+    }
+
+    .tile-container {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      pointer-events: none;
+    }
+
+    .tile {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 5px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 120ms cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+      box-shadow: none;
+      cursor: pointer;
+      pointer-events: auto;
+      border: none;
+      background: transparent;
+    }
+
+    .tile.tile-new {
+      animation: popIn 180ms cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+    }
+
+    .tile.tile-merged {
+      animation: popMerge 190ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 5;
+    }
+
+    .tile.tile-moving-under {
+      z-index: 2;
+    }
+
+    @keyframes popIn {
+      0% { transform: translate(var(--tx), var(--ty)) scale(0.2); opacity: 0; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 1; }
+    }
+
+    @keyframes popMerge {
+      0% { transform: translate(var(--tx), var(--ty)) scale(0.8); }
+      50% { transform: translate(var(--tx), var(--ty)) scale(1.18); }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1); }
+    }
+
+    .tile-sprite {
+      width: 100%;
+      height: 100%;
+      background-image: var(--spritesheet-url);
+      background-size: var(--sprite-size, 400% 300%);
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      border-radius: 5px;
+    }
+
+    /* 4x3 coordinates for 12 stages */
+    .sprite-pos-1  { background-position: var(--pos-1, 0% 0%); }
+    .sprite-pos-2  { background-position: var(--pos-2, 33.333% 0%); }
+    .sprite-pos-3  { background-position: var(--pos-3, 66.666% 0%); }
+    .sprite-pos-4  { background-position: var(--pos-4, 100% 0%); }
+
+    .sprite-pos-5  { background-position: var(--pos-5, 0% 50%); }
+    .sprite-pos-6  { background-position: var(--pos-6, 33.333% 50%); }
+    .sprite-pos-7  { background-position: var(--pos-7, 66.666% 50%); }
+    .sprite-pos-8  { background-position: var(--pos-8, 100% 50%); }
+
+    .sprite-pos-9  { background-position: var(--pos-9, 0% 100%); }
+    .sprite-pos-10 { background-position: var(--pos-10, 33.333% 100%); }
+    .sprite-pos-11 { background-position: var(--pos-11, 66.666% 100%); }
+    .sprite-pos-12 { background-position: var(--pos-12, 100% 100%); }
+
+    /* ФИРМЕННЫЙ ЛОГОТИП И НАДПИСЬ НА БЕЗЕЛЕ */
+    .bezel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .console-logo {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: #273766;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-style: italic;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .console-sublogo {
+      font-size: 6px;
+      color: #9b2839;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    /* ПАНЕЛЬ УПРАВЛЕНИЯ ВИНТАЖНОЙ КОНСОЛИ (Литой пластик, круглые кнопки A/B и Select/Start) */
+    .controls-zone {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      padding: 12px 4px 0;
+      margin-top: 6px;
+      position: relative;
+    }
+
+    /* D-PAD / Дополнительная кнопка заново в стиле функциональной клавиши */
+    .left-cluster {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-meta-socket {
+      background: #a9a8a2;
+      border: 2px solid #8e8d87;
+      border-radius: 12px;
+      padding: 3px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(255, 255, 255, 0.6);
+    }
+
+    .btn-pill {
+      background: linear-gradient(180deg, #7c7c7f 0%, #505054 60%, #3e3e42 100%);
+      color: #cfd2d6;
+      border: 1px solid #6b6b6e;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 7px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 
+        0 4px 0 #202022,
+        0 6px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      transition: transform 0.06s, box-shadow 0.06s;
+    }
+
+    .btn-pill:hover {
+      background: linear-gradient(180deg, #88888b 0%, #5a5a5e 60%, #444448 100%);
+    }
+
+    .btn-pill:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #202022, 0 2px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Центр: Кнопка настроек в стиле Select/Start */
+    .center-cluster {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 2px;
+    }
+
+    .pill-btn-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .rubber-pill-btn {
+      background: #737378;
+      border: 1px solid #55555a;
+      width: 44px;
+      height: 14px;
+      border-radius: 8px;
+      transform: rotate(-25deg);
+      box-shadow: 
+        0 3px 0 #2a2a2d,
+        0 4px 6px rgba(0, 0, 0, 0.35),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.06s;
+    }
+
+    .rubber-pill-btn:active {
+      transform: rotate(-25deg) translateY(2px);
+      box-shadow: 0 1px 0 #2a2a2d;
+    }
+
+    .rubber-pill-label {
+      font-size: 6px;
+      color: #273766;
+      font-weight: bold;
+      letter-spacing: 0.6px;
+      margin-top: 6px;
+      margin-left: 8px;
+      display: inline-block;
+      transform: rotate(-25deg);
+      transform-origin: center center;
+    }
+
+    /* Правый блок: Классические круглые выпуклые ретро-кнопки под углом */
+    .right-cluster {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Аппаратный LED-индикатор ровно между кнопкой альбом и серым экраном */
+    .console-led-box {
+      position: absolute;
+      bottom: calc(100% + 9px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #b5b4ad;
+      padding: 2.5px 6px;
+      border-radius: 5px;
+      border: 1px solid #9c9b94;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+      white-space: nowrap;
+    }
+    .console-led-label {
+      font-size: 6px;
+      color: #3b3a36;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    .console-led-lens {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #7a2b2b 0%, #3e1212 100%);
+      border: 1.5px solid #290a0a;
+      box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 1px rgba(255, 255, 255, 0.4);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .console-led-lens.lit {
+      background: radial-gradient(circle at 35% 35%, #ff8a8a 0%, #ef4444 60%, #b91c1c 100%);
+      border-color: #7f1d1d;
+      box-shadow: 0 0 12px #ef4444, 0 0 20px #f87171, inset 0 1px 2px #fff;
+      animation: ledPulse 0.65s infinite alternate;
+    }
+    @keyframes ledPulse {
+      0% { opacity: 0.5; filter: drop-shadow(0 0 3px #ef4444); }
+      100% { opacity: 1; filter: drop-shadow(0 0 12px #ef4444); }
+    }
+
+    .round-socket {
+      background: #a9a8a2;
+      border: 2px solid #8e8d87;
+      border-radius: 50%;
+      padding: 4px;
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Классическая выпуклая кнопка вишнёвого цвета (Nintendo B/A Style) */
+    .btn-round-retro {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #af2a4c 0%, #851c36 60%, #5d0f22 100%);
+      border: 1px solid #9e2341;
+      border-top: 1.5px solid #d44d70;
+      color: #ffe4ec;
+      font-family: inherit;
+      font-size: 6px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 6px 0 #330813,
+        0 8px 12px rgba(0, 0, 0, 0.5),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+      transition: transform 0.06s, box-shadow 0.06s;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .btn-round-retro:hover {
+      background: radial-gradient(circle at 35% 30%, #bf3458 0%, #94223e 60%, #681328 100%);
+    }
+
+    .btn-round-retro:active {
+      transform: translateY(4px);
+      box-shadow: 
+        0 2px 0 #330813,
+        0 3px 5px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Аутентичные диагональные прорези динамика внизу справа */
+    .console-speaker-grille {
+      position: absolute;
+      bottom: 6px;
+      right: 18px;
+      display: flex;
+      gap: 5px;
+      transform: rotate(-31deg);
+    }
+    .grille-slot {
+      width: 4px;
+      height: 28px;
+      background: #73726d;
+      border-radius: 3px;
+      box-shadow: inset 0 2px 3px #3e3d3a, 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    /* МОДАЛЬНЫЕ ОКНА */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(6, 10, 18, 0.88);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #cfceca;
+      border: 4px solid #8e8d87;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 440px;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 16px 0 #12141c, 0 22px 30px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      color: #1a1e28;
+      position: relative;
+    }
+
+    /* Кнопка закрытия (крестик) в верхнем правом углу модального окна */
+    .btn-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #873636;
+      border: 2px solid #5a2020;
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #381111;
+      transition: transform 0.08s, background-color 0.1s;
+      z-index: 20;
+    }
+
+    .btn-modal-close:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #381111;
+      background: #a13d3d;
+    }
+
+    .modal-card h2 {
+      font-size: 11px;
+      color: #273766;
+      line-height: 1.4;
+      padding-right: 28px;
+    }
+
+    .modal-card h2 {
+      font-size: 11px;
+      color: #273766;
+      line-height: 1.4;
+    }
+
+    .modal-card p {
+      font-size: 7px;
+      color: #55555a;
+      line-height: 1.6;
+    }
+
+    /* Альбом на 5 колонок */
+    .bestiary-5cols {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      background: #8e9f8d;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #586c55;
+      margin-top: 4px;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    .species-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .col-header {
+      font-size: 7px;
+      color: #172416;
+      margin-bottom: 2px;
+      font-weight: bold;
+    }
+
+    .achieve-slot {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background: #80917f;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .achieve-slot.unlocked:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 6px rgba(39, 55, 102, 0.6);
+    }
+
+    .achieve-slot.active-inspected {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 2px #facc15, 0 0 10px rgba(250, 204, 21, 0.8);
+      z-index: 10;
+    }
+
+    .achieve-slot.locked {
+      background: #738472;
+      color: #4a5c49;
+      font-size: 8px;
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .achieve-slot.unlocked {
+      background: transparent;
+    }
+
+    /* Всплывающее контекстное описание прямо под ячейкой */
+    .slot-lore-popover {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      background: #1b261a;
+      border: 2px solid #486146;
+      border-radius: 8px;
+      padding: 10px 10px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 40;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.65), 0 2px 4px rgba(0, 0, 0, 0.5);
+      animation: popoverFadeIn 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+      text-align: left;
+    }
+
+    @keyframes popoverFadeIn {
+      0% { opacity: 0; transform: translateY(-4px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .slot-popover-arrow {
+      position: absolute;
+      top: -8px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid #486146;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .slot-popover-arrow::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: -6px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid #1b261a;
+    }
+
+    .slot-popover-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px dashed #3f543d;
+      padding-bottom: 5px;
+    }
+
+    .slot-popover-title {
+      font-size: 7.5px;
+      color: #facc15;
+      font-weight: bold;
+      line-height: 1.3;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-popover-close {
+      background: #4a2828;
+      border: 1px solid #6b3535;
+      color: #fff;
+      font-family: inherit;
+      font-size: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .btn-popover-close:active {
+      transform: scale(0.92);
+      background: #702f2f;
+    }
+
+    .slot-popover-body {
+      font-size: 7px;
+      color: #d1dfcf;
+      line-height: 1.55;
+    }
+
+    /* Ретро-диалог общения с драконом (Tamagotchi Communicator) */
+    .tamagotchi-speech-bubble {
+      display: none;
+      position: absolute;
+      top: 50px;
+      left: 6px;
+      right: 6px;
+      background: #92a391;
+      border: 3px solid #324330;
+      border-radius: 8px;
+      padding: 12px 10px;
+      font-size: 8px;
+      line-height: 1.6;
+      color: #0e170d;
+      z-index: 25;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .tamagotchi-speech-bubble.active {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tamagotchi-speech-bubble::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 20px;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 8px solid #324330;
+    }
+
+    .dragon-speech-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    #dragon-speech-text {
+      flex: 1;
+      font-size: 8px;
+      line-height: 1.6;
+      color: #0b130b;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      word-break: break-word;
+    }
+
+    .btn-close-bubble {
+      background: #7a3535;
+      border: 2px solid #521f1f;
+      color: #fff;
+      font-family: inherit;
+      font-size: 9px;
+      font-weight: bold;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 0 #331212;
+      transition: transform 0.08s, background-color 0.1s;
+    }
+
+    .btn-close-bubble:active {
+      transform: translateY(2px);
+      box-shadow: 0 0 0 #331212;
+      background: #943e3e;
+    }
+
+    .dragon-dialog-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      width: 100%;
+    }
+
+    .btn-dialog-chip {
+      background: #7a8c79;
+      border: 2px solid #455744;
+      color: #0d170c;
+      font-family: inherit;
+      font-size: 7px;
+      font-weight: bold;
+      padding: 9px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: 0 2px 0 #334232, inset 0 1px 1px rgba(255, 255, 255, 0.35);
+      transition: transform 0.08s, background-color 0.1s;
+      min-height: 36px;
+    }
+
+    .btn-dialog-chip:hover {
+      background: #6c7f6b;
+    }
+
+    .btn-dialog-chip:active {
+      transform: translateY(2px);
+      box-shadow: 0 0 0 #334232;
+      background: #5a6d59;
+      color: #fff;
+    }
+
+    .grimoire-card {
+      background: #b5b4ad;
+      border: 2px solid #8e8d87;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .grimoire-title {
+      font-size: 8px;
+      color: #273766;
+      font-weight: bold;
+    }
+
+    .grimoire-text {
+      font-size: 7px;
+      color: #2b3b2a;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    /* Настройки */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+      background: #b5b4ad;
+      border: 2px solid #8e8d87;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 4px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .setting-label {
+      font-size: 8px;
+      color: #172416;
+      line-height: 1.4;
+      font-weight: bold;
+    }
+
+    .toggle-btn {
+      background: #505054;
+      border: 2px solid #3e3e42;
+      color: #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 7px;
+      cursor: pointer;
+      min-width: 60px;
+      text-align: center;
+      box-shadow: 0 2px 0 #202022;
+    }
+
+    .toggle-btn.active {
+      background: #235c34;
+      border-color: #163d22;
+      color: #bbf7d0;
+    }
+
+    /* Подпись автора под консолью */
+    .author-credit {
+      margin-top: 32px;
+      font-size: 7px;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.6;
+      letter-spacing: 0.5px;
+    }
+
+    .author-credit a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.15s, text-shadow 0.15s;
+    }
+
+    .author-credit a:hover {
+      color: #7dd3fc;
+      text-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+      text-decoration: underline;
+    }
+
+    /* Canvas салюта */
+    #fx-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-wrapper">
+    <!-- Винтажная консоль Game Boy / Tamagotchi Edition -->
+    <div class="vintage-console">
+      <!-- Верхний слот картриджа с переключателем питания -->
+      <div class="console-top-slot">
+        <div class="console-switch-tab"></div>
+        <span style="font-size: 5px; color: #a9a8a2; letter-spacing: 0.5px;">◀ OFF • ON ▶</span>
+        <div class="console-switch-tab" style="background: #252b3b;"></div>
+      </div>
+
+      <!-- Защитный экранный безель -->
+      <div class="screen-bezel">
+        <div class="bezel-header">
+          <div class="brand-stripes">
+            <div class="stripe-blue"></div>
+            <div class="stripe-red"></div>
+          </div>
+          <div class="battery-indicator">
+            <div class="battery-led"></div>
+            <span class="battery-label">BATTERY</span>
+          </div>
+        </div>
+
+        <!-- LCD Матрица цвета #9dae9c -->
+        <div class="lcd-screen">
+          <div class="screen-top-bar">
+            <div class="companion-box" id="top-pet-interactive" style="cursor: pointer;" title="Нажмите, чтобы поговорить с драконом!">
+              <div class="pet-avatar" id="top-pet-avatar">
+                <div class="tile-sprite sprite-pos-1" id="top-pet-sprite"></div>
+              </div>
+              <span class="pet-emote" id="pet-emote-icon">✨</span>
+              <div class="pet-info">
+                <div class="pet-rank-title" id="pet-level-txt">LEVEL 1/12</div>
+              </div>
+            </div>
+
+            <!-- Кнопка вопроса -->
+            <button class="btn-help-lcd" id="btn-help-bubble" title="Спросить дракончика">?</button>
+
+            <div class="scores-panel">
+              <div class="score-chip">
+                <div class="lbl">СЧЕТ</div>
+                <div class="val" id="score-txt">0</div>
+              </div>
+              <div class="score-chip">
+                <div class="lbl">РЕКОРД</div>
+                <div class="val" id="best-txt">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Всплывающий интерактивный диалог Тамагочи с драконом (Автономный оффлайн-режим) -->
+          <div class="tamagotchi-speech-bubble" id="dragon-speech-bubble">
+            <div class="dragon-speech-header">
+              <div id="dragon-speech-text">«Гррр! Я расту с каждым твоим ходом...»</div>
+              <button class="btn-close-bubble" id="btn-close-bubble" title="Закрыть">✕</button>
+            </div>
+            <div class="dragon-dialog-actions">
+              <button class="btn-dialog-chip" id="btn-ask-mood">❤️ Настроение</button>
+              <button class="btn-dialog-chip" id="btn-ask-tactics">🧠 Совет</button>
+              <button class="btn-dialog-chip" id="btn-ask-lore">📜 Легенда</button>
+            </div>
+          </div>
+
+          <!-- Игровое поле внутри ретро-экрана -->
+          <div class="board-outer" id="board-touch-surface">
+            <div class="board-inner">
+              <div class="grid-background">
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+              </div>
+              <div class="tile-container" id="tile-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bezel-footer">
+          <div class="console-logo">DRAGON BOY</div>
+          <div class="console-sublogo">COLOR LCD</div>
+        </div>
+      </div>
+
+      <!-- Панель физических винтажных кнопок -->
+      <div class="controls-zone">
+        <!-- Слева: Клавиша ЗАНОВО (Reset/Restart) -->
+        <div class="left-cluster">
+          <div class="btn-meta-socket">
+            <button class="btn-pill" id="btn-restart" title="Начать заново">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+              ЗАНОВО
+            </button>
+          </div>
+        </div>
+
+        <!-- По центру: Кнопки HELP и OPTION (в аутентичном стиле SELECT / START) -->
+        <div class="center-cluster">
+          <div class="pill-btn-group">
+            <button class="rubber-pill-btn" id="btn-dragon-help" title="Помощь дракончика"></button>
+            <div class="rubber-pill-label">HELP</div>
+          </div>
+          <div class="pill-btn-group">
+            <button class="rubber-pill-btn" id="btn-settings" title="Настройки"></button>
+            <div class="rubber-pill-label">OPTION</div>
+          </div>
+        </div>
+
+        <!-- Справа: Выпуклая круглая кнопка ДОСТИЖЕНИЯ с LED индикатором -->
+        <div class="right-cluster">
+          <div class="console-led-box" title="Новое открытие!">
+            <span class="console-led-label">NEW</span>
+            <div class="console-led-lens" id="achieve-led-lens"></div>
+          </div>
+
+          <div class="round-socket">
+            <button class="btn-round-retro" id="btn-achievements" title="Достижения и бестиарий">
+              АЛЬБОМ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Прорези динамика консоли -->
+      <div class="console-speaker-grille">
+        <div class="grille-slot"></div>
+        <div class="grille-slot"></div>
+        <div class="grille-slot"></div>
+        <div class="grille-slot"></div>
+      </div>
+    </div>
+
+    <!-- Подпись создателя -->
+    <div class="author-credit">
+      Сделал <a href="https://t.me/maxim_koles" target="_blank" rel="noopener noreferrer">@maxim_koles</a> с помощью ИИ
+    </div>
+  </div>
+
+  <!-- Модальное окно достижений на 5 колонок -->
+  <div class="modal-overlay" id="modal-achievements">
+    <div class="modal-card">
+      <button class="btn-modal-close" id="btn-x-close-achievements" title="Закрыть">✕</button>
+      <h2>АЛЬБОМ ФОРМ ДРАКОНОВ</h2>
+      <p>5 ВИДОВ • 12 СТАДИЙ • <span id="progress-counter">0 / 60</span> ОТКРЫТО</p>
+      
+      <div class="bestiary-5cols" id="bestiary-grid"></div>
+
+      <!-- Всплывающая плашка описания дракона прямо под нажатой ячейкой -->
+      <div class="slot-lore-popover" id="slot-lore-popover">
+        <div class="slot-popover-arrow" id="slot-popover-arrow"></div>
+        <div class="slot-popover-header">
+          <div class="slot-popover-title" id="slot-popover-title">ДРАКОН</div>
+          <button class="btn-popover-close" id="btn-popover-close" title="Закрыть">✕</button>
+        </div>
+        <div class="slot-popover-body" id="slot-popover-body"></div>
+      </div>
+
+      <div class="btn-meta-socket" style="align-self: center; margin-top: 6px;">
+        <button class="btn-pill" id="btn-close-achievements">ЗАКРЫТЬ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно настроек звука -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-card" style="max-width: 380px;">
+      <h2>НАСТРОЙКИ ЗВУКА</h2>
+      
+      <div class="settings-list">
+        <div class="setting-item">
+          <div class="setting-label">ЗВУКИ ХОДОВ</div>
+          <button class="toggle-btn active" id="toggle-move-sound">ВКЛ</button>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">ЗВУКИ ОТКРЫТИЙ И САЛЮТА</div>
+          <button class="toggle-btn active" id="toggle-fanfare-sound">ВКЛ</button>
+        </div>
+      </div>
+
+      <div class="btn-meta-socket" style="align-self: center; margin-top: 8px;">
+        <button class="btn-pill" id="btn-close-settings">ГОТОВО</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно конца игры / победы -->
+  <div class="modal-overlay" id="modal-gameover">
+    <div class="modal-card" style="max-width: 380px;">
+      <h2 id="modal-end-title">ВЕНЕЦ ЭВОЛЮЦИИ!</h2>
+      <div style="width: 80px; height: 80px; margin: 4px auto; border-radius: 8px; border: 2px solid #586c55; overflow: hidden;" id="modal-end-icon"></div>
+      <p id="modal-end-desc">Вы вырастили легендарную форму дракона!</p>
+      <div class="btn-meta-socket" style="align-self: center; margin-top: 6px;">
+        <button class="btn-pill" id="btn-modal-retry">ИГРАТЬ ЕЩЁ РАЗ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas для фейерверка из кнопки достижений -->
+  <canvas id="fx-canvas"></canvas>
+
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      if (typeof tg.disableVerticalSwipes === 'function') {
+        tg.disableVerticalSwipes();
+      }
+    }
+
+    let audioCtx = null;
+    let moveSoundEnabled = true;
+    let fanfareSoundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSynthTone(freq, duration = 0.08, type = 'square', vol = 0.08) {
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playMoveAudio() {
+      if (!moveSoundEnabled) return;
+      playSynthTone(280, 0.04, 'triangle', 0.06);
+    }
+
+    function playMergeAudio() {
+      if (!moveSoundEnabled) return;
+      playSynthTone(420, 0.05, 'square', 0.07);
+      setTimeout(() => playSynthTone(560, 0.07, 'square', 0.07), 40);
+    }
+
+    function playUnlockAudio() {
+      if (!fanfareSoundEnabled) return;
+      const notes = [523, 659, 784, 1046];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playSynthTone(freq, 0.12, 'square', 0.1), idx * 75);
+      });
+    }
+
+    const DRAGON_ASSETS = [
+      "https://taplink.st/p/5/f/d/b/71115006.jpg?0",
+      "https://taplink.st/p/4/5/a/f/71115005.jpg?0",
+      "https://taplink.st/p/1/3/4/c/71115004.jpg?0",
+      "https://taplink.st/p/e/3/b/0/71115003.jpg?0",
+      "https://taplink.st/p/2/3/9/c/71115001.jpg?0"
+    ];
+
+    const processedAssetsCache = new Map();
+
+    function prepareCroppedAsset(url, extraCropPx = 10) {
+      if (processedAssetsCache.has(url)) {
+        return Promise.resolve(processedAssetsCache.get(url));
+      }
+
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        img.onload = () => {
+          const W = img.naturalWidth || 400;
+          const H = img.naturalHeight || 300;
+          const cellW = W / 4;
+          const cellH = H / 3;
+
+          const cropPxX = Math.max(10, Math.min(cellW * 0.22, extraCropPx));
+          const cropPxY = Math.max(10, Math.min(cellH * 0.22, extraCropPx));
+
+          const usableCellW = cellW - cropPxX * 2;
+          const usableCellH = cellH - cropPxY * 2;
+
+          const sx = cellW / usableCellW;
+          const sy = cellH / usableCellH;
+
+          const cssVars = {};
+          cssVars['--sprite-size'] = `${(4 * sx * 100).toFixed(3)}% ${(3 * sy * 100).toFixed(3)}%`;
+
+          const denomX = 4 * sx - 1;
+          const denomY = 3 * sy - 1;
+
+          for (let lvl = 1; lvl <= 12; lvl++) {
+            const col = (lvl - 1) % 4;
+            const row = Math.floor((lvl - 1) / 4);
+
+            const posX = ((col * sx + (cropPxX / usableCellW)) / denomX) * 100;
+            const posY = ((row * sy + (cropPxY / usableCellH)) / denomY) * 100;
+
+            cssVars[`--pos-${lvl}`] = `${posX.toFixed(3)}% ${posY.toFixed(3)}%`;
+          }
+
+          const result = { url: url, cssVars };
+          processedAssetsCache.set(url, result);
+          resolve(result);
+        };
+
+        img.onerror = () => {
+          const fallback = {
+            url: url,
+            cssVars: { '--sprite-size': '400% 300%' }
+          };
+          processedAssetsCache.set(url, fallback);
+          resolve(fallback);
+        };
+
+        img.src = url;
+      });
+    }
+
+    let unlockedMatrix = [
+      [1], [1], [1], [1], [1]
+    ];
+
+    let currentSpeciesIndex = 0;
+    const GRID_SIZE = 4;
+    let grid = [];
+    let score = 0;
+    let bestScore = 0;
+    let hasWon = false;
+    let nextTileId = 1;
+    let isAnimating = false;
+    const activeTileElements = new Map();
+
+    const tileContainer = document.getElementById('tile-container');
+    const boardElement = document.getElementById('board-touch-surface');
+    const scoreTxt = document.getElementById('score-txt');
+    const bestTxt = document.getElementById('best-txt');
+    const topPetSpriteEl = document.getElementById('top-pet-sprite');
+    const petLevelTxt = document.getElementById('pet-level-txt');
+    const topPetAvatarEl = document.getElementById('top-pet-avatar');
+    const petEmoteEl = document.getElementById('pet-emote-icon');
+    const achieveLedLens = document.getElementById('achieve-led-lens');
+    const btnAchievements = document.getElementById('btn-achievements');
+    const modalAchievements = document.getElementById('modal-achievements');
+    const bestiaryGrid = document.getElementById('bestiary-grid');
+    const progressCounter = document.getElementById('progress-counter');
+    const modalSettings = document.getElementById('modal-settings');
+    const modalGameOver = document.getElementById('modal-gameover');
+    const modalEndTitle = document.getElementById('modal-end-title');
+    const modalEndDesc = document.getElementById('modal-end-desc');
+    const modalEndIcon = document.getElementById('modal-end-icon');
+
+    // Элементы связи с дракончиком через Gemini API
+    const dragonSpeechBubble = document.getElementById('dragon-speech-bubble');
+    const dragonSpeechText = document.getElementById('dragon-speech-text');
+    const topPetInteractive = document.getElementById('top-pet-interactive');
+    const btnHelpBubble = document.getElementById('btn-help-bubble');
+    const btnAskMood = document.getElementById('btn-ask-mood');
+    const btnAskTactics = document.getElementById('btn-ask-tactics');
+    const btnAskLore = document.getElementById('btn-ask-lore');
+    const btnCloseBubble = document.getElementById('btn-close-bubble');
+    const slotLorePopover = document.getElementById('slot-lore-popover');
+    const slotPopoverArrow = document.getElementById('slot-popover-arrow');
+    const slotPopoverTitle = document.getElementById('slot-popover-title');
+    const slotPopoverBody = document.getElementById('slot-popover-body');
+    const btnPopoverClose = document.getElementById('btn-popover-close');
+    let activeInspectedKey = null;
+
+    /* ========================================================
+       АВТОНОМНАЯ БАЗА ЗНАНИЙ И ДИАЛОГОВ ТАМАГОЧИ (100% ОФФЛАЙН)
+       ======================================================== */
+    const SPECIES_NAMES = [
+      "Дракон Каэлирис",
+      "Дракон Миравель",
+      "Дракон Зефирис",
+      "Дракон Вердон",
+      "Дракон Аурелион"
+    ];
+
+    const STAGE_TITLES = [
+      "Загадочное Яйцо", "Первый Проклёв", "Любопытный Птенец", "Оперившийся Дракончик",
+      "Юный Летун", "Крылатый Охотник", "Парящий Страж", "Грозный Дракон",
+      "Владыка Вышины", "Древний Исполин", "Первородный Властитель", "Легендарный Дракон"
+    ];
+
+    const OFFLINE_LORE_VAULT = {
+      0: [ // 1. Бирюзовое яйцо с розовыми прожилками (Каэлирис)
+        "Бирюзовое яйцо, испещрённое изящными розовыми прожилками, хранит ровное внутреннее тепло.",
+        "Скорлупа трескается, являя миру кроху с мягкой светлой чешуёй, искрящейся при каждом вздохе.",
+        "Малыш делает первые неуверенные шаги и учится выпускать крошечные язычки алого пламени.",
+        "Окрас чешуек начинает медленно меняться, а за спиной расправляются первые перепончатые крылышки.",
+        "Юный дракон совершает первые круги в воздухе, поднимаясь всё выше на тёплых восходящих потоках.",
+        "Оттенки узоров на чешуе становятся глубже и богаче, а пламенное дыхание обретает уверенную мощь.",
+        "Окрепший дракон свободно рассекает небеса, оставляя в полёте тонкий след раскалённых искр.",
+        "Чешуя вновь меняет переливы на новые тона; размах крыльев внушает трепет обитателям высот.",
+        "Опытный крылатый владыка, способный взмывать к самым облакам и выдыхать мощные столбы огня.",
+        "Величественный исполин с полностью сформировавшимся глубоким узором чешуи и необоримой силой полёта.",
+        "Древний хранитель поднебесья, чьё жаркое пламя озаряет горизонт, а крылья затмевают солнце.",
+        "Венец эволюции! Легендарная форма, чей цвет достиг абсолютного совершенства, а полёт свободен от законов времени."
+      ],
+      1: [ // 2. Розовое яйцо (Миравель)
+        "Розовое яйцо с гладкой мерцающей скорлупой мягко пульсирует в такт невидимому биению сердца.",
+        "Из трещин показался сонный дракончик, чья нежная чешуя сразу ловит первые солнечные блики.",
+        "Дракончик забавно чихает озорными искрами и с любопытством изучает окружающий мир.",
+        "Первые взмахи маленьких крыльев: чешуя начинает переливаться и слегка менять первоначальный тон.",
+        "Молодой дракон осваивает планирующий полёт, весело кружась и выпуская тёплые кольца пламени.",
+        "Оттенок чешуи заметно преображается, кончики крыльев темнеют, а пламя разгорается всё ярче.",
+        "Уверенный покоритель небесной лазури, способный стремительно пикировать и выдыхать огненные волны.",
+        "Чешуйчатый покров вновь трансформирует цвета; мощные крылья несут дракона сквозь любые ветра.",
+        "Грозный и грациозный летун, чьё дыхание плавит преграды, а чешуя играет новыми богатыми полутонами.",
+        "Древний владыка просторов, чьё пламя вздымается высоко в небо, распугивая ночные тучи.",
+        "Первородный титан небес с внушительным размахом крыльев и зрелым, неповторимым окрасом.",
+        "Венец эволюции! Непревзойдённый легендарный дракон, познавший тайны высшего полёта и огненной стихии."
+      ],
+      2: [ // 3. Голубое яйцо (Зефирис)
+        "Голубое яйцо с чистым матовым сиянием излучает приятный согревающий жар.",
+        "Первый проклёв скорлупы: на свет появляется любознательный малыш, жадно вдыхающий воздух.",
+        "Несмело расправляет гибкие крылышки и пускает первые струйки игривого золотистого огня.",
+        "С каждой линькой первоначальный окрас сменяется новыми красками, а покров набирает плотность.",
+        "Дракончик уверенно отрывается от земли, паря в потоках ветра и выдыхая яркие снопы искр.",
+        "Цветовая гамма чешуи приобретает выразительную глубину; взмах крыльев поднимает воздушные вихри.",
+        "Быстрый небесный странник, чьё пламенное дыхание становится грозным оружием защиты.",
+        "Взрослея, дракон открывает в себе новые оттенки чешуи, а размах его крыльев закрывает небесный свод.",
+        "Неутомимый властелин вышины, чьё жаркое пламя способно осветить самые глухие сумерки.",
+        "Исполинский дракон древней стати, чьи крылья рассекают бури, а дыхание полно первозданной мощи.",
+        "Первородный хозяин воздушных течений с переливающимся царственным покровом чешуи.",
+        "Венец эволюции! Легендарный богоподобный дракон, чьё всепоглощающее пламя и полёт стали мифом."
+      ],
+      3: [ // 4. Зеленое яйцо (Вердон)
+        "Зеленое яйцо с плотной рельефной скорлупой, хранящей в глубине дремлющую искру жизни.",
+        "Скорлупа осыпается, выпуская крошечного дракона с гладкими и блестящими чешуйками.",
+        "Малыш греется в лучах света, пробует тренировать лёгкие и задорно фыркает огнём.",
+        "Начинается смена оттенков: чешуя играет новыми тонами, а крылья обретают силу и упругость.",
+        "Первый самостоятельный полёт над горными грядами в сопровождении весёлых огненных всполохов.",
+        "Окрас становится более насыщенным и сложным; дракон учится маневрировать на предельной скорости.",
+        "Мощный крылатый охотник, чьё дыхание рождает плотные столбы чистого неукротимого пламени.",
+        "Новый этап взросления приносит свежие переливы в окрасе и ещё больший размах могучих крыльев.",
+        "Владыка поднебесных просторов, рассекающий шторма и озаряющий горизонт огненным дыханием.",
+        "Древний крылатый исполин, чей зрелый облик внушает священный трепет, а рёв подобен грому.",
+        "Первородный гигант, чья чешуя вобрала в себя многообразие полутонов за долгие века полётов.",
+        "Венец эволюции! Недосягаемый легендарный дракон, властвующий над всеми небесными далями."
+      ],
+      4: [ // 5. Золотое яйцо (Аурелион)
+        "Золотое яйцо переливается тёплым благородным блеском и скрывает внутри великую силу.",
+        "Треснувшая золотистая скорлупа выпускает на волю бойкого новорождённого дракончика.",
+        "Дракончик делает первые шажки, расправляет мягкие крылья и выдыхает пучки ярких искр.",
+        "Чешуя постепенно переходит в новые оттенки и узоры, а взмахи крыльев становятся всё смелее.",
+        "Юный летун впервые взмывает в небо, празднуя свободу ослепительными вспышками пламени.",
+        "С каждой фазой роста гамма чешуи обогащается новыми полутонами, а полёт становится стремительнее.",
+        "Гордый и сильный дракон, чьё огненное дыхание плавит скалы, а виражи в воздухе безупречны.",
+        "Чешуйчатый покров вновь преображается в уникальный зрелый окрас; сила пламени не знает равных.",
+        "Грозный повелитель небес, свободно парящий над вершинами гор и хранящий огонь в самом сердце.",
+        "Древний могучий исполин, чей величественный силуэт в небе внушает благоговение.",
+        "Первородный владыка вышины, чья многогранная чешуя мерцает при каждом ударе исполинских крыльев.",
+        "Венец эволюции! Абсолютный легендарный дракон, непревзойдённый властелин пламени и свободного полёта."
+      ]
+    };
+
+    function getCurrentMaxDragonLevel() {
+      let maxLvl = 1;
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (grid[r] && grid[r][c] && grid[r][c].level > maxLvl) {
+            maxLvl = grid[r][c].level;
+          }
+        }
+      }
+      return maxLvl;
+    }
+
+    function isMaxInCorner() {
+      const maxLvl = getCurrentMaxDragonLevel();
+      const corners = [
+        grid[0] && grid[0][0],
+        grid[0] && grid[0][GRID_SIZE - 1],
+        grid[GRID_SIZE - 1] && grid[GRID_SIZE - 1][0],
+        grid[GRID_SIZE - 1] && grid[GRID_SIZE - 1][GRID_SIZE - 1]
+      ];
+      return corners.some(tile => tile && tile.level === maxLvl);
+    }
+
+    function speakWithDragon(promptType) {
+      dragonSpeechBubble.classList.add('active');
+      const maxLvl = getCurrentMaxDragonLevel();
+      const emptyCount = getEmptyCells().length;
+      const speciesIdx = currentSpeciesIndex % 5;
+      const cornerLocked = isMaxInCorner();
+
+      let reply = "";
+
+      if (promptType === 'mood') {
+        if (maxLvl === 1) {
+          const eggMoods = [
+            "«*Тук-тук*... Яйцо ритмично подрагивает от тепла твоих рук!»",
+            "«*Тихо шуршит скорлупой*... Чувствую, скоро начнётся эволюция!»",
+            "«*Мягко светится*... Соедини два яйца, чтобы я наконец увидел мир!»"
+          ];
+          reply = eggMoods[Math.floor(Math.random() * eggMoods.length)];
+        } else if (maxLvl <= 3) {
+          const babyMoods = [
+            "«*Урчит и чихает искорками*! Мне так нравится, когда ты делаешь удачные ходы!»",
+            "«*Хрустит скорлупкой*! Смотри, у меня уже прорезались крылышки!»",
+            "«*Трётся чешуйкой об экран*... Давай объединим ещё дракончиков!»"
+          ];
+          reply = babyMoods[Math.floor(Math.random() * babyMoods.length)];
+        } else if (maxLvl <= 7) {
+          const teenMoods = [
+            "«*Гордо расправляет крылья*! Моя чешуя меняет цвет с каждым слиянием!»",
+            "«*Выпускает струю жаркого пламени*! Силы растут, я готов к великим формам!»",
+            "«*Внимательно следит за полем*... Мы отличная команда, продолжай в том же духе!»"
+          ];
+          reply = teenMoods[Math.floor(Math.random() * teenMoods.length)];
+        } else if (maxLvl <= 11) {
+          const titanMoods = [
+            "«*Глубокий благородный рык*! Моё пламя озаряет всё пространство экрана!»",
+            "«*Чешуя переливается зрелыми оттенками*... До венца эволюции остался лишь шаг!»",
+            "«*Расправляет исполинские крылья*... Я чувствую дыхание легендарного перерождения!»"
+          ];
+          reply = titanMoods[Math.floor(Math.random() * titanMoods.length)];
+        } else {
+          reply = "«*Громоподобное сияние триумфа*! Я достиг венца эволюции! Мы покорили эту головоломку!»";
+        }
+      } else if (promptType === 'tactics') {
+        // Умный ситуативный анализ поля
+        if (!cornerLocked && maxLvl >= 3) {
+          const cornerWarning = [
+            "«Осторожно! Твой сильнейший дракон оторван от угла! Срочно прижми его к краю или углу, иначе новое яйцо запрёт его в центре!»",
+            "«Тревога: старший дракон сместился в центр поля! Сделай ход к ближайшей стене, пока поле не заблокировалось!»"
+          ];
+          reply = cornerWarning[Math.floor(Math.random() * cornerWarning.length)];
+        } else if (emptyCount <= 3) {
+          const dangerTactics = [
+            "«Критическая теснота (всего " + emptyCount + " клетки)! Забудь про развитие: ищи ЛЮБОЕ объединение, чтобы освободить место для вздоха!»",
+            "«Поле почти забито! Никогда не делай ход в сторону противоположного края — иначе яйцо появится прямо за спиной сильнейшего дракона!»",
+            "«Опасность блокировки! Если нет очевидных пар, объединяй яйца 1-2 уровня в углу поля каскадом!»",
+            "«Внимание: осталось всего " + emptyCount + " свободных гнезда! Сконцентрируйся только на расчистке нижнего ряда!»",
+            "«Гнездо переполнено! Сделай короткий ход в сторону наибольшего скопления одинаковых форм!»"
+          ];
+          reply = dangerTactics[Math.floor(Math.random() * dangerTactics.length)];
+        } else if (emptyCount <= 7) {
+          const midTactics = [
+            "«Свободно " + emptyCount + " ячеек. 'Правило трёх клавиш': выбери 3 направления (например: Вниз, Влево, Вправо) и табу на ход Вверх!»",
+            "«Тактика 'Змейки': держи драконов строго по убыванию силы вдоль ряда: [Lvl 7] ➔ [Lvl 6] ➔ [Lvl 5] ➔ [Lvl 4]. Так слияния идут по цепочке!»",
+            "«Защищай базу: нижний ряд всегда должен быть полностью заполнен (4 из 4). Если в нём появится пустота, ход вбок сдвинет старшего дракона из угла!»",
+            "«Каскадное слияние: подтягивай младшие формы ко вторым ступеням, чтобы одно движение вызвало цепную реакцию из 2-3 эволюций сразу!»",
+            "«Не торопись с мелкими яйцами: развивай сначала соседнюю ступень до пары старшему дракону, не разбрасывая их по всему гнезду!»",
+            "«Контролируй спавн: новое яйцо появляется только на пустых клетках. Сохраняй свободным центр поля для манёвров!»"
+          ];
+          reply = midTactics[Math.floor(Math.random() * midTactics.length)];
+        } else {
+          const freeTactics = [
+            "«Много места (" + emptyCount + " ячеек)! Самое время выбрать один постоянный 'якорный' угол (например, левый нижний) и вести всю игру туда!»",
+            "«Основа победы: выстраивай плотную опорную стенку вдоль одного края поля. Чем плотнее стена, тем безопаснее манёвры!»",
+            "«Профессиональный приём: объединяй двойки и четвёрки во 2-й и 3-й линиях, подготавливая питательную базу для главного дракона!»",
+            "«Планируй на 2 шага вперёд: перед свайпом смотри, куда сдвинутся соседние дракончики и где останется место для нового яйца!»",
+            "«Свобода для манёвра! Не разбрасывай яйца по диагоналям — всегда прессуй их к одной выбранной стороне!»",
+            "«Отличный старт! Главное — не делай хаотичных круговых свайпов, каждый ход должен укреплять цепочку старшинства!»"
+          ];
+          reply = freeTactics[Math.floor(Math.random() * freeTactics.length)];
+        }
+      } else if (promptType === 'lore') {
+        const loreList = OFFLINE_LORE_VAULT[speciesIdx] || OFFLINE_LORE_VAULT[0];
+        const currentStageLore = loreList[maxLvl - 1] || loreList[0];
+        const speciesName = SPECIES_NAMES[speciesIdx] || "Дракон";
+        const stageName = STAGE_TITLES[maxLvl - 1] || ("Стадия " + maxLvl);
+
+        reply = `«${speciesName} • ${stageName}: ${currentStageLore}»`;
+      }
+
+      dragonSpeechText.textContent = reply;
+      triggerPetReaction('unlock');
+      playSynthTone(550, 0.07, 'square', 0.05);
+    }
+
+    function hideLorePopover() {
+      if (!slotLorePopover) return;
+      slotLorePopover.style.display = 'none';
+      if (activeInspectedKey) {
+        document.querySelectorAll('.achieve-slot.active-inspected').forEach(el => {
+          el.classList.remove('active-inspected');
+        });
+        activeInspectedKey = null;
+      }
+    }
+
+    function toggleInspectGrimoire(speciesIdx, level, slotEl) {
+      const key = `${speciesIdx}-${level}`;
+
+      // Повторное нажатие на ту же ячейку скрывает описание
+      if (activeInspectedKey === key) {
+        hideLorePopover();
+        return;
+      }
+
+      document.querySelectorAll('.achieve-slot.active-inspected').forEach(el => {
+        el.classList.remove('active-inspected');
+      });
+
+      activeInspectedKey = key;
+      slotEl.classList.add('active-inspected');
+
+      const safeSpecies = speciesIdx % 5;
+      const safeLevel = Math.max(1, Math.min(12, level));
+
+      const speciesName = SPECIES_NAMES[safeSpecies] || `Вид #${safeSpecies + 1}`;
+      const titleName = STAGE_TITLES[safeLevel - 1] || `Форма ${safeLevel}`;
+      const loreText = OFFLINE_LORE_VAULT[safeSpecies][safeLevel - 1] || "Древняя тайна этой формы бережно хранится в глубинах драконьей летописи.";
+
+      slotPopoverTitle.textContent = `${speciesName} • ${titleName} (${safeLevel}/12)`;
+      slotPopoverBody.textContent = loreText;
+
+      // Точный расчёт координат относительно модального окна карточки
+      const modalCard = modalAchievements.querySelector('.modal-card');
+      const modalRect = modalCard.getBoundingClientRect();
+      const slotRect = slotEl.getBoundingClientRect();
+
+      // Гарантированно позиционируем ПОД нижней границей нажатой ячейки (+8px отступ)
+      const topPos = (slotRect.bottom - modalRect.top) + modalCard.scrollTop + 8;
+      slotLorePopover.style.top = `${topPos}px`;
+      slotLorePopover.style.display = 'flex';
+
+      // Вычисляем положение стрелочки строго по центру нажатой ячейки
+      const popoverRect = slotLorePopover.getBoundingClientRect();
+      const arrowX = (slotRect.left + slotRect.width / 2) - popoverRect.left;
+      const clampedArrowX = Math.max(16, Math.min(popoverRect.width - 16, arrowX));
+      slotPopoverArrow.style.left = `${clampedArrowX}px`;
+
+      // Плавная докрутка, если ячейка находится внизу экрана
+      setTimeout(() => {
+        slotLorePopover.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+
+    function triggerPetReaction(type) {
+      if (!topPetAvatarEl) return;
+      topPetAvatarEl.classList.remove('react-jump');
+      void topPetAvatarEl.offsetWidth;
+      topPetAvatarEl.classList.add('react-jump');
+
+      if (petEmoteEl) {
+        petEmoteEl.textContent = type === 'unlock' ? '⭐' : '✨';
+        petEmoteEl.classList.add('show');
+        setTimeout(() => petEmoteEl.classList.remove('show'), 800);
+      }
+    }
+
+    const canvas = document.getElementById('fx-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchFountainFromButton() {
+      playUnlockAudio();
+      triggerPetReaction('unlock');
+      const rect = btnAchievements.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + 4;
+
+      const colors = ['#facc15', '#f59e0b', '#38bdf8', '#10b981', '#ec4899', '#ffffff'];
+
+      for (let i = 0; i < 90; i++) {
+        const spreadAngle = -Math.PI / 2 + (Math.random() - 0.5) * 1.35;
+        const speed = 5.5 + Math.random() * 9.5;
+
+        particles.push({
+          x: originX + (Math.random() - 0.5) * 20,
+          y: originY,
+          vx: Math.cos(spreadAngle) * speed,
+          vy: Math.sin(spreadAngle) * speed,
+          size: 3 + Math.random() * 4.5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          decay: 0.015 + Math.random() * 0.018,
+          gravity: 0.18
+        });
+      }
+    }
+
+    function updateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        ctx.restore();
+      }
+      requestAnimationFrame(updateParticles);
+    }
+    requestAnimationFrame(updateParticles);
+
+    function setSpecies(index) {
+      currentSpeciesIndex = index % DRAGON_ASSETS.length;
+      const rawUrl = DRAGON_ASSETS[currentSpeciesIndex];
+
+      prepareCroppedAsset(rawUrl, 10).then((assetData) => {
+        document.documentElement.style.setProperty('--spritesheet-url', `url("${assetData.url}")`);
+        for (const [varName, varVal] of Object.entries(assetData.cssVars)) {
+          document.documentElement.style.setProperty(varName, varVal);
+        }
+        updateTopAvatar();
+      });
+    }
+
+    function setRandomSpecies() {
+      const rand = Math.floor(Math.random() * DRAGON_ASSETS.length);
+      setSpecies(rand);
+    }
+
+    function updateTopAvatar() {
+      let maxLvl = 1;
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (grid[r] && grid[r][c] && grid[r][c].level > maxLvl) {
+            maxLvl = grid[r][c].level;
+          }
+        }
+      }
+      topPetSpriteEl.className = `tile-sprite sprite-pos-${maxLvl}`;
+      petLevelTxt.textContent = `LEVEL ${maxLvl}/12`;
+    }
+
+    function unlockStage(speciesIdx, level) {
+      if (!unlockedMatrix[speciesIdx]) {
+        unlockedMatrix[speciesIdx] = [1];
+      }
+      if (!unlockedMatrix[speciesIdx].includes(level)) {
+        unlockedMatrix[speciesIdx].push(level);
+        unlockedMatrix[speciesIdx].sort((a, b) => a - b);
+        
+        if (achieveLedLens) {
+          achieveLedLens.classList.add('lit');
+        }
+        launchFountainFromButton();
+      }
+    }
+
+    function renderBestiary() {
+      bestiaryGrid.innerHTML = '';
+      hideLorePopover();
+      let totalUnlocked = 0;
+      const colLabels = ['I', 'II', 'III', 'IV', 'V'];
+
+      for (let s = 0; s < DRAGON_ASSETS.length; s++) {
+        const col = document.createElement('div');
+        col.className = 'species-col';
+
+        const head = document.createElement('div');
+        head.className = 'col-header';
+        head.textContent = colLabels[s] || `${s + 1}`;
+        col.appendChild(head);
+
+        const unlockedList = unlockedMatrix[s] || [1];
+        const rawUrl = DRAGON_ASSETS[s];
+        const cached = processedAssetsCache.get(rawUrl);
+        const assetUrl = cached ? cached.url : rawUrl;
+        const assetVars = cached ? cached.cssVars : null;
+
+        for (let lvl = 1; lvl <= 12; lvl++) {
+          const slot = document.createElement('div');
+          const isUnlocked = unlockedList.includes(lvl);
+
+          if (isUnlocked) {
+            totalUnlocked++;
+            slot.className = 'achieve-slot unlocked';
+            slot.title = `Нажмите, чтобы прочитать описание (Стадия ${lvl})`;
+
+            let customStyles = `background-image: url('${assetUrl}'); width:100%; height:100%;`;
+            if (assetVars) {
+              if (assetVars['--sprite-size']) customStyles += ` background-size: ${assetVars['--sprite-size']};`;
+              if (assetVars[`--pos-${lvl}`]) customStyles += ` background-position: ${assetVars[`--pos-${lvl}`]};`;
+            }
+
+            slot.innerHTML = `<div class="tile-sprite sprite-pos-${lvl}" style="${customStyles}"></div>`;
+            slot.addEventListener('click', (e) => {
+              e.stopPropagation();
+              playSynthTone(440, 0.05);
+              toggleInspectGrimoire(s, lvl, slot);
+            });
+          } else {
+            slot.className = 'achieve-slot locked';
+            slot.textContent = '?';
+          }
+
+          col.appendChild(slot);
+        }
+        bestiaryGrid.appendChild(col);
+      }
+
+      progressCounter.textContent = `${totalUnlocked} / 60`;
+    }
+
+    function initEmptyGrid() {
+      grid = [];
+      for (let r = 0; r < GRID_SIZE; r++) {
+        grid[r] = [];
+        for (let c = 0; c < GRID_SIZE; c++) {
+          grid[r][c] = null;
+        }
+      }
+    }
+
+    function getEmptyCells() {
+      const empty = [];
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (!grid[r][c]) empty.push({ r, c });
+        }
+      }
+      return empty;
+    }
+
+    function spawnRandomTile() {
+      const empty = getEmptyCells();
+      if (empty.length === 0) return null;
+
+      const { r, c } = empty[Math.floor(Math.random() * empty.length)];
+      const level = Math.random() < 0.88 ? 1 : 2;
+      const tile = {
+        id: nextTileId++,
+        level: level,
+        row: r,
+        col: c,
+        isNew: true,
+        isMerged: false
+      };
+      grid[r][c] = tile;
+      unlockStage(currentSpeciesIndex, level);
+      return tile;
+    }
+
+    function calculateTileSize() {
+      const containerWidth = tileContainer.clientWidth || 280;
+      const gap = 6;
+      const tileSize = (containerWidth - (gap * (GRID_SIZE - 1))) / GRID_SIZE;
+      return { tileSize, gap };
+    }
+
+    function renderBoard(movingTiles = []) {
+      const { tileSize, gap } = calculateTileSize();
+      const visibleIds = new Set();
+
+      const tilesToDisplay = [];
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (grid[r][c]) tilesToDisplay.push(grid[r][c]);
+        }
+      }
+      for (const t of movingTiles) {
+        tilesToDisplay.push(t);
+      }
+
+      for (const tileData of tilesToDisplay) {
+        visibleIds.add(tileData.id);
+        const targetX = tileData.col * (tileSize + gap);
+        const targetY = tileData.row * (tileSize + gap);
+
+        let tileEl = activeTileElements.get(tileData.id);
+
+        if (!tileEl) {
+          tileEl = document.createElement('div');
+          tileEl.className = 'tile';
+          tileEl.style.width = `${tileSize}px`;
+          tileEl.style.height = `${tileSize}px`;
+
+          const startX = (tileData.fromCol !== undefined ? tileData.fromCol : tileData.col) * (tileSize + gap);
+          const startY = (tileData.fromRow !== undefined ? tileData.fromRow : tileData.row) * (tileSize + gap);
+
+          tileEl.style.setProperty('--tx', `${startX}px`);
+          tileEl.style.setProperty('--ty', `${startY}px`);
+          tileEl.style.transform = `translate(${startX}px, ${startY}px)`;
+
+          tileEl.innerHTML = `<div class="tile-sprite sprite-pos-${tileData.level}"></div>`;
+          tileContainer.appendChild(tileEl);
+          activeTileElements.set(tileData.id, tileEl);
+
+          if (tileData.isNew) tileEl.classList.add('tile-new');
+        } else {
+          tileEl.style.width = `${tileSize}px`;
+          tileEl.style.height = `${tileSize}px`;
+        }
+
+        if (tileData.isMerged) {
+          tileEl.classList.remove('tile-new');
+          tileEl.classList.remove('tile-merged');
+          void tileEl.offsetWidth;
+          tileEl.classList.add('tile-merged');
+        }
+
+        if (tileData.isSlidingToDeath) {
+          tileEl.classList.add('tile-moving-under');
+        }
+
+        tileEl.style.setProperty('--tx', `${targetX}px`);
+        tileEl.style.setProperty('--ty', `${targetY}px`);
+        tileEl.style.transform = `translate(${targetX}px, ${targetY}px)`;
+
+        tileData.isNew = false;
+        tileData.isMerged = false;
+      }
+
+      for (const [id, el] of activeTileElements.entries()) {
+        if (!visibleIds.has(id)) {
+          if (el.parentNode) el.parentNode.removeChild(el);
+          activeTileElements.delete(id);
+        }
+      }
+
+      scoreTxt.textContent = score;
+      if (score > bestScore) {
+        bestScore = score;
+        bestTxt.textContent = bestScore;
+      }
+      updateTopAvatar();
+    }
+
+    function move(direction) {
+      if (isAnimating) return;
+
+      let moved = false;
+      const mergedThisTurn = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(false));
+      const slidingToDeathTiles = [];
+      const pendingMerges = [];
+
+      const traverseRows = direction === 2 ? [3, 2, 1, 0] : [0, 1, 2, 3];
+      const traverseCols = direction === 1 ? [3, 2, 1, 0] : [0, 1, 2, 3];
+
+      for (const r of traverseRows) {
+        for (const c of traverseCols) {
+          const tile = grid[r][c];
+          if (!tile) continue;
+
+          let targetRow = r;
+          let targetCol = c;
+
+          while (true) {
+            let nextR = targetRow;
+            let nextC = targetCol;
+
+            if (direction === 0) nextR--;
+            if (direction === 1) nextC++;
+            if (direction === 2) nextR++;
+            if (direction === 3) nextC--;
+
+            if (nextR < 0 || nextR >= GRID_SIZE || nextC < 0 || nextC >= GRID_SIZE) break;
+
+            const neighbor = grid[nextR][nextC];
+            if (!neighbor) {
+              targetRow = nextR;
+              targetCol = nextC;
+            } else if (
+              neighbor.level === tile.level &&
+              !mergedThisTurn[nextR][nextC] &&
+              tile.level < 12
+            ) {
+              targetRow = nextR;
+              targetCol = nextC;
+              break;
+            } else {
+              break;
+            }
+          }
+
+          if (targetRow !== r || targetCol !== c) {
+            const existing = grid[targetRow][targetCol];
+
+            if (existing && existing.level === tile.level) {
+              const nextLevel = tile.level + 1;
+              slidingToDeathTiles.push({
+                ...tile,
+                fromRow: r,
+                fromCol: c,
+                row: targetRow,
+                col: targetCol,
+                isSlidingToDeath: true
+              });
+
+              pendingMerges.push({
+                row: targetRow,
+                col: targetCol,
+                nextLevel: nextLevel
+              });
+
+              grid[r][c] = null;
+              mergedThisTurn[targetRow][targetCol] = true;
+            } else {
+              grid[targetRow][targetCol] = {
+                ...tile,
+                fromRow: r,
+                fromCol: c,
+                row: targetRow,
+                col: targetCol
+              };
+              grid[r][c] = null;
+            }
+            moved = true;
+          }
+        }
+      }
+
+      if (moved) {
+        isAnimating = true;
+        playMoveAudio();
+        renderBoard(slidingToDeathTiles);
+
+        setTimeout(() => {
+          let hasLegendary = false;
+
+          for (const merge of pendingMerges) {
+            playMergeAudio();
+            triggerPetReaction('merge');
+            grid[merge.row][merge.col] = {
+              id: nextTileId++,
+              level: merge.nextLevel,
+              row: merge.row,
+              col: merge.col,
+              isNew: false,
+              isMerged: true
+            };
+
+            score += Math.pow(2, merge.nextLevel);
+            unlockStage(currentSpeciesIndex, merge.nextLevel);
+
+            if (merge.nextLevel === 12 && !hasWon) {
+              hasLegendary = true;
+            }
+          }
+
+          spawnRandomTile();
+          renderBoard([]);
+          isAnimating = false;
+
+          if (hasLegendary) {
+            hasWon = true;
+            showEndModal(true);
+          } else if (checkGameOver()) {
+            showEndModal(false);
+          }
+        }, 125);
+      }
+    }
+
+    function checkGameOver() {
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (!grid[r][c]) return false;
+        }
+      }
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const cur = grid[r][c];
+          if (!cur) continue;
+          if (c + 1 < GRID_SIZE && grid[r][c + 1] && grid[r][c + 1].level === cur.level) return false;
+          if (r + 1 < GRID_SIZE && grid[r + 1][c] && grid[r + 1][c].level === cur.level) return false;
+        }
+      }
+      return true;
+    }
+
+    function showEndModal(isVictory) {
+      if (isVictory) {
+        modalEndTitle.textContent = "ВЕНЕЦ ЭВОЛЮЦИИ!";
+        modalEndDesc.textContent = "Поздравляем! Ваш дракончик развился до максимальной формы!";
+        modalEndIcon.innerHTML = `<div class="tile-sprite sprite-pos-12" style="width:100%;height:100%;"></div>`;
+      } else {
+        modalEndTitle.textContent = "ХОДОВ НЕТ";
+        modalEndDesc.textContent = "Гнёзда заполнены. Попробуйте вырастить нового дракончика!";
+        modalEndIcon.innerHTML = `<div class="tile-sprite sprite-pos-1" style="width:100%;height:100%;"></div>`;
+      }
+      modalGameOver.classList.add('active');
+    }
+
+    function startNewGame() {
+      modalGameOver.classList.remove('active');
+      modalAchievements.classList.remove('active');
+      modalSettings.classList.remove('active');
+      tileContainer.innerHTML = '';
+      activeTileElements.clear();
+      initEmptyGrid();
+      score = 0;
+      hasWon = false;
+      isAnimating = false;
+
+      setRandomSpecies();
+
+      spawnRandomTile();
+      spawnRandomTile();
+      renderBoard();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (modalAchievements.classList.contains('active') || 
+          modalGameOver.classList.contains('active') || 
+          modalSettings.classList.contains('active')) return;
+
+      switch (e.key) {
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+        case 'ц':
+        case 'Ц':
+          e.preventDefault();
+          move(0);
+          break;
+        case 'ArrowRight':
+        case 'd':
+        case 'D':
+        case 'в':
+        case 'В':
+          e.preventDefault();
+          move(1);
+          break;
+        case 'ArrowDown':
+        case 's':
+        case 'S':
+        case 'ы':
+        case 'Ы':
+          e.preventDefault();
+          move(2);
+          break;
+        case 'ArrowLeft':
+        case 'a':
+        case 'A':
+        case 'ф':
+        case 'Ф':
+          e.preventDefault();
+          move(3);
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    boardElement.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }, { passive: true });
+
+    boardElement.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+
+    boardElement.addEventListener('touchend', (e) => {
+      if (e.changedTouches.length !== 1) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      const elapsed = Date.now() - touchStartTime;
+
+      if (Math.max(absDx, absDy) > 20 && elapsed < 650) {
+        if (absDx > absDy) {
+          if (dx > 0) move(1);
+          else move(3);
+        } else {
+          if (dy > 0) move(2);
+          else move(0);
+        }
+      }
+    }, { passive: true });
+
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      playSynthTone(400, 0.05);
+      startNewGame();
+    });
+
+    document.getElementById('btn-achievements').addEventListener('click', () => {
+      playSynthTone(520, 0.05);
+      renderBestiary();
+      modalAchievements.classList.add('active');
+      if (achieveLedLens) {
+        achieveLedLens.classList.remove('lit');
+      }
+    });
+
+    document.getElementById('btn-close-achievements').addEventListener('click', () => {
+      playSynthTone(320, 0.04);
+      hideLorePopover();
+      modalAchievements.classList.remove('active');
+    });
+
+    document.getElementById('btn-x-close-achievements').addEventListener('click', () => {
+      playSynthTone(320, 0.04);
+      hideLorePopover();
+      modalAchievements.classList.remove('active');
+    });
+
+    if (btnPopoverClose) {
+      btnPopoverClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playSynthTone(320, 0.04);
+        hideLorePopover();
+      });
+    }
+
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      playSynthTone(480, 0.05);
+      modalSettings.classList.add('active');
+    });
+
+    const btnDragonHelp = document.getElementById('btn-dragon-help');
+    if (btnDragonHelp) {
+      btnDragonHelp.addEventListener('click', () => {
+        playSynthTone(480, 0.05);
+        speakWithDragon('mood');
+      });
+    }
+
+    document.getElementById('btn-close-settings').addEventListener('click', () => {
+      playSynthTone(320, 0.04);
+      modalSettings.classList.remove('active');
+    });
+
+    // Обработчики автономных диалогов Тамагочи с дракончиком
+    topPetInteractive.addEventListener('click', () => {
+      speakWithDragon('mood');
+    });
+
+    btnHelpBubble.addEventListener('click', (e) => {
+      e.stopPropagation();
+      speakWithDragon('mood');
+    });
+
+    btnAskMood.addEventListener('click', () => {
+      speakWithDragon('mood');
+    });
+
+    btnAskTactics.addEventListener('click', () => {
+      speakWithDragon('tactics');
+    });
+
+    btnAskLore.addEventListener('click', () => {
+      speakWithDragon('lore');
+    });
+
+    btnCloseBubble.addEventListener('click', () => {
+      playSynthTone(300, 0.04);
+      dragonSpeechBubble.classList.remove('active');
+    });
+
+    const toggleMoveBtn = document.getElementById('toggle-move-sound');
+    const toggleFanfareBtn = document.getElementById('toggle-fanfare-sound');
+
+    toggleMoveBtn.addEventListener('click', () => {
+      moveSoundEnabled = !moveSoundEnabled;
+      toggleMoveBtn.textContent = moveSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
+      toggleMoveBtn.classList.toggle('active', moveSoundEnabled);
+      if (moveSoundEnabled) playMoveAudio();
+    });
+
+    toggleFanfareBtn.addEventListener('click', () => {
+      fanfareSoundEnabled = !fanfareSoundEnabled;
+      toggleFanfareBtn.textContent = fanfareSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
+      toggleFanfareBtn.classList.toggle('active', fanfareSoundEnabled);
+      if (fanfareSoundEnabled) playUnlockAudio();
+    });
+
+    document.getElementById('btn-modal-retry').addEventListener('click', () => {
+      startNewGame();
+    });
+
+    window.addEventListener('resize', () => {
+      renderBoard();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      DRAGON_ASSETS.forEach(url => prepareCroppedAsset(url, 10));
+      startNewGame();
+    });
+  </script>
+</body>
+</html>
