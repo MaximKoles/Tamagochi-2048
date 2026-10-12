@@ -2188,24 +2188,24 @@
           if (typeof conf.moveSound === 'boolean') moveSoundEnabled = conf.moveSound;
           if (typeof conf.fanfareSound === 'boolean') fanfareSoundEnabled = conf.fanfareSound;
           if (typeof conf.showNumbers === 'boolean') showNumbersEnabled = conf.showNumbers;
-
-          const toggleMoveBtn = document.getElementById('toggle-move-sound');
-          const toggleFanfareBtn = document.getElementById('toggle-fanfare-sound');
-          const toggleNumbersBtn = document.getElementById('toggle-numbers');
-          if (toggleMoveBtn) {
-            toggleMoveBtn.textContent = moveSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
-            toggleMoveBtn.classList.toggle('active', moveSoundEnabled);
-          }
-          if (toggleFanfareBtn) {
-            toggleFanfareBtn.textContent = fanfareSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
-            toggleFanfareBtn.classList.toggle('active', fanfareSoundEnabled);
-          }
-          if (toggleNumbersBtn) {
-            toggleNumbersBtn.textContent = showNumbersEnabled ? 'ВКЛ' : 'ВЫКЛ';
-            toggleNumbersBtn.classList.toggle('active', showNumbersEnabled);
-          }
-          updateNumbersVisibility();
         }
+
+        const toggleMoveBtn = document.getElementById('toggle-move-sound');
+        const toggleFanfareBtn = document.getElementById('toggle-fanfare-sound');
+        const toggleNumbersBtn = document.getElementById('toggle-numbers');
+        if (toggleMoveBtn) {
+          toggleMoveBtn.textContent = moveSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
+          toggleMoveBtn.classList.toggle('active', moveSoundEnabled);
+        }
+        if (toggleFanfareBtn) {
+          toggleFanfareBtn.textContent = fanfareSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
+          toggleFanfareBtn.classList.toggle('active', fanfareSoundEnabled);
+        }
+        if (toggleNumbersBtn) {
+          toggleNumbersBtn.textContent = showNumbersEnabled ? 'ВКЛ' : 'ВЫКЛ';
+          toggleNumbersBtn.classList.toggle('active', showNumbersEnabled);
+        }
+        updateNumbersVisibility();
       } catch (e) {
         console.warn('localStorage недоступен:', e);
       }
@@ -3469,6 +3469,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedGameData();
+      updateNumbersVisibility();
       DRAGON_ASSETS.forEach(url => prepareCroppedAsset(url, 10));
       startNewGame();
     });
