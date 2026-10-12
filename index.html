@@ -406,6 +406,28 @@
       border-radius: 5px;
     }
 
+    .tile-num {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: rgba(16, 25, 15, 0.88);
+      color: #bbf7d0;
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(5px, 1.6vw, 6.5px);
+      padding: 1.5px 3px;
+      border-radius: 3px;
+      border: 1px solid #455a43;
+      pointer-events: none;
+      z-index: 6;
+      line-height: 1.1;
+      display: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+
+    .show-tile-numbers .tile-num {
+      display: block;
+    }
+
     /* 4x3 coordinates for 12 stages */
     .sprite-pos-1  { background-position: var(--pos-1, 0% 0%); }
     .sprite-pos-2  { background-position: var(--pos-2, 33.333% 0%); }
@@ -1854,6 +1876,10 @@
           <div class="setting-label">ЗВУКИ ОТКРЫТИЙ И САЛЮТА</div>
           <button class="toggle-btn active" id="toggle-fanfare-sound">ВКЛ</button>
         </div>
+        <div class="setting-item">
+          <div class="setting-label">ПОКАЗЫВАТЬ ЧИСЛА</div>
+          <button class="toggle-btn" id="toggle-numbers">ВЫКЛ</button>
+        </div>
       </div>
 
       <div class="btn-meta-socket" style="align-self: center; margin-top: 8px;">
@@ -1902,6 +1928,15 @@
     let audioCtx = null;
     let moveSoundEnabled = true;
     let fanfareSoundEnabled = true;
+    let showNumbersEnabled = false;
+
+    function updateNumbersVisibility() {
+      if (showNumbersEnabled) {
+        document.body.classList.add('show-tile-numbers');
+      } else {
+        document.body.classList.remove('show-tile-numbers');
+      }
+    }
 
     function initAudio() {
       if (!audioCtx) {
@@ -2152,9 +2187,11 @@
           const conf = JSON.parse(savedSettings);
           if (typeof conf.moveSound === 'boolean') moveSoundEnabled = conf.moveSound;
           if (typeof conf.fanfareSound === 'boolean') fanfareSoundEnabled = conf.fanfareSound;
+          if (typeof conf.showNumbers === 'boolean') showNumbersEnabled = conf.showNumbers;
 
           const toggleMoveBtn = document.getElementById('toggle-move-sound');
           const toggleFanfareBtn = document.getElementById('toggle-fanfare-sound');
+          const toggleNumbersBtn = document.getElementById('toggle-numbers');
           if (toggleMoveBtn) {
             toggleMoveBtn.textContent = moveSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
             toggleMoveBtn.classList.toggle('active', moveSoundEnabled);
@@ -2163,6 +2200,11 @@
             toggleFanfareBtn.textContent = fanfareSoundEnabled ? 'ВКЛ' : 'ВЫКЛ';
             toggleFanfareBtn.classList.toggle('active', fanfareSoundEnabled);
           }
+          if (toggleNumbersBtn) {
+            toggleNumbersBtn.textContent = showNumbersEnabled ? 'ВКЛ' : 'ВЫКЛ';
+            toggleNumbersBtn.classList.toggle('active', showNumbersEnabled);
+          }
+          updateNumbersVisibility();
         }
       } catch (e) {
         console.warn('localStorage недоступен:', e);
@@ -2185,7 +2227,8 @@
       try {
         localStorage.setItem(STORAGE_SETTINGS_KEY, JSON.stringify({
           moveSound: moveSoundEnabled,
-          fanfareSound: fanfareSoundEnabled
+          fanfareSound: fanfareSoundEnabled,
+          showNumbers: showNumbersEnabled
         }));
       } catch (e) {}
     }
@@ -2938,7 +2981,7 @@
           tileEl.style.setProperty('--ty', `${startY}px`);
           tileEl.style.transform = `translate(${startX}px, ${startY}px)`;
 
-          tileEl.innerHTML = `<div class="tile-sprite sprite-pos-${tileData.level}"></div>`;
+          tileEl.innerHTML = `<div class="tile-sprite sprite-pos-${tileData.level}"></div><span class="tile-num">${Math.pow(2, tileData.level)}</span>`;
           tileContainer.appendChild(tileEl);
           activeTileElements.set(tileData.id, tileEl);
 
@@ -3403,6 +3446,18 @@
       saveSettingsData();
       if (fanfareSoundEnabled) playUnlockAudio();
     });
+
+    const toggleNumbersBtn = document.getElementById('toggle-numbers');
+    if (toggleNumbersBtn) {
+      toggleNumbersBtn.addEventListener('click', () => {
+        showNumbersEnabled = !showNumbersEnabled;
+        toggleNumbersBtn.textContent = showNumbersEnabled ? 'ВКЛ' : 'ВЫКЛ';
+        toggleNumbersBtn.classList.toggle('active', showNumbersEnabled);
+        updateNumbersVisibility();
+        saveSettingsData();
+        playSynthTone(380, 0.04);
+      });
+    }
 
     document.getElementById('btn-modal-retry').addEventListener('click', () => {
       startNewGame();
